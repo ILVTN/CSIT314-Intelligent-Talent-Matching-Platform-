@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employer Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2>TalentMatch</h2>
+            <a href="#company">Company Profile</a>
+            <a href="#create-job">Create Job</a>
+            <a href="#my-jobs">My Jobs</a>
+            <a href="#applications">Applications</a>
+            <a href="#recommended">Recommended Candidates</a>
+            <a href="#search">Search Candidates</a>
+            <a href="#membership">Membership</a>
+            <button onclick="logout()">Logout</button>
+        </aside>
+
+        <main class="dashboard-content">
+            <div class="dashboard-header">
+                <h1>Employer Dashboard</h1>
+                <p>Welcome, employer.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalMyJobs">0</h3>
+                    <p>My Job Postings</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3 id="totalCandidates">0</h3>
+                    <p>Candidates</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3 id="employerMembership">Free</h3>
+                    <p>Membership</p>
+                </div>
+            </div>
+
+            <div class="card" id="company">
+                <h2>Company Profile</h2>
+
+                <form id="employerProfileForm">
+                    <label>Company Name:</label><br>
+                    <input type="text" id="company_name"><br><br>
+
+                    <label>Company Information:</label><br>
+                    <textarea id="company_info"></textarea><br><br>
+
+                    <label>Contact:</label><br>
+                    <input type="text" id="contact"><br><br>
+
+                    <button type="submit">Save Company Profile</button>
+                </form>
+
+            <p id="profileMessage"></p>
+            </div>
+
+            <div class="card" id="create-job">
+                <h2>Create Job Posting</h2>
+
+                <form id="jobForm">
+                    <label>Job Title:</label><br>
+                    <input type="text" id="job_title" required><br><br>
+
+                    <label>Company Information:</label><br>
+                    <textarea id="job_company_info"></textarea><br><br>
+
+                    <label>Job Description:</label><br>
+                    <textarea id="job_description" required></textarea><br><br>
+
+                    <label>Required Education:</label><br>
+                    <input type="text" id="required_education" placeholder="Bachelor, Master, Diploma"><br><br>
+
+                    <label>Required Skills:</label><br>
+                    <textarea id="required_skills" placeholder="JavaScript, SQL, Node.js"></textarea><br><br>
+
+                    <label>Years of Experience:</label><br>
+                    <input type="number" id="years_experience"><br><br>
+
+                    <label>Work Mode:</label><br>
+                    <select id="work_mode">
+                        <option value="">Select work mode</option>
+                        <option value="Remote">Remote</option>
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select><br><br>
+
+                    <label>Job Location:</label><br>
+                    <input type="text" id="job_location" placeholder="Sydney"><br><br>
+
+                    <button type="submit">Create Job</button>
+                </form>
+
+                <p id="jobMessage"></p>
+            </div>
+
+            <div class="card" id="my-jobs">
+                <h2>My Job Postings</h2>
+                <div id="jobsList"></div>
+            </div>
+            
+            <div class="card" id="applications">
+                <h2>Applications</h2>
+                <button onclick="loadApplications()">Refresh Applications</button>
+                <br><br>
+                <div id="applicationsList"></div>
+            </div>
+
+            <div class="card" id="recommended">
+                <h2>Recommended Candidates</h2>
+
+                <label>Select Job:</label><br>
+                <select id="recommendationJobSelect"></select>
+                <br><br>
+
+                <button onclick="loadRecommendedCandidates()">Load Recommended Candidates</button>
+                <br><br>
+
+                <div id="recommendedCandidatesList"></div>
+            </div>
+
+            
+            <div class="card" id="search">
+                <h2>Search Candidates</h2>
+
+                <div>
+                    <h3>Search and Filter Candidates</h3>
+
+                    <label>Keyword:</label><br>
+                    <input type="text" id="candidateKeyword" placeholder="JavaScript, SQL, Computer Science"><br><br>
+
+                    <label>Education:</label><br>
+                    <input type="text" id="candidateEducation" placeholder="Bachelor"><br><br>
+
+                    <label>Location:</label><br>
+                    <input type="text" id="candidateLocation" placeholder="Sydney"><br><br>
+
+                    <label>Preferred Work Mode:</label><br>
+                    <select id="candidateWorkMode">
+                        <option value="">Any</option>
+                        <option value="Remote">Remote</option>
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select><br><br>
+
+                    <label>Minimum Experience:</label><br>
+                    <input type="number" id="candidateExperience" placeholder="1"><br><br>
+
+                    <button onclick="loadCandidates()">Search Candidates</button>
+                    <button onclick="clearCandidateSearch()">Clear</button>
+                </div>
+
+                <div id="candidatesList"></div>
+            </div>
+
+            <div class="card" id="membership">
+                <h2>Membership</h2>
+                <p>Current Membership: <strong id="membershipStatus"></strong></p>
+                <button onclick="upgradeMembership()">Upgrade to Member</button>
+                <p id="membershipMessage"></p>
+            </div>
+
+        </main> 
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!token || !user || user.role !== "employer") {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("membershipStatus").textContent = user.membership || "free";
+        document.getElementById("employerMembership").textContent = user.membership || "free";
+
+        async function upgradeMembership() {
+            const response = await fetch("/api/auth/membership", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    membership: "member"
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                user.membership = "member";
+                localStorage.setItem("user", JSON.stringify(user));
+                document.getElementById("membershipStatus").textContent = "member";
+                document.getElementById("membershipMessage").textContent = data.message;
+                document.getElementById("membershipMessage").style.color = "green";
+            } else {
+                document.getElementById("membershipMessage").textContent = data.error;
+                document.getElementById("membershipMessage").style.color = "red";
+            }
+        }
+
+        async function loadEmployerProfile() {
+            const response = await fetch("/api/employers/profile", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("company_name").value = data.company_name || "";
+                document.getElementById("company_info").value = data.company_info || "";
+                document.getElementById("contact").value = data.contact || "";
+            }
+        }
+
+        document.getElementById("employerProfileForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const profileData = {
+                company_name: document.getElementById("company_name").value,
+                company_info: document.getElementById("company_info").value,
+                contact: document.getElementById("contact").value
+            };
+
+            const response = await fetch("/api/employers/profile", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(profileData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("profileMessage").textContent = data.message;
+                document.getElementById("profileMessage").style.color = "green";
+            } else {
+                document.getElementById("profileMessage").textContent = data.error;
+                document.getElementById("profileMessage").style.color = "red";
+            }
+        });
+
+        document.getElementById("jobForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const jobData = {
+                job_title: document.getElementById("job_title").value,
+                company_info: document.getElementById("job_company_info").value,
+                job_description: document.getElementById("job_description").value,
+                required_education: document.getElementById("required_education").value,
+                required_skills: document.getElementById("required_skills").value,
+                years_experience: document.getElementById("years_experience").value,
+                work_mode: document.getElementById("work_mode").value,
+                job_location: document.getElementById("job_location").value
+            };
+
+            const response = await fetch("/api/jobs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(jobData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("jobMessage").textContent = data.message;
+                document.getElementById("jobMessage").style.color = "green";
+                document.getElementById("jobForm").reset();
+                loadMyJobs();
+            } else {
+                document.getElementById("jobMessage").textContent = data.error;
+                document.getElementById("jobMessage").style.color = "red";
+            }
+        });
+
+        async function loadMyJobs() {
+            const response = await fetch("/api/jobs/my-jobs", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const jobs = await response.json();
+            document.getElementById("totalMyJobs").textContent = jobs.length;
+            const jobsList = document.getElementById("jobsList");
+            const recommendationJobSelect = document.getElementById("recommendationJobSelect");
+
+            if (!response.ok) {
+                jobsList.innerHTML = "<p>Unable to load jobs.</p>";
+                return;
+            }
+
+            if (jobs.length === 0) {
+                jobsList.innerHTML = "<p>No jobs created yet.</p>";
+                recommendationJobSelect.innerHTML = "";
+                return;
+            }
+
+            recommendationJobSelect.innerHTML = jobs.map(job => `
+                <option value="${job.id}">${job.job_title}</option>
+            `).join("");
+
+            jobsList.innerHTML = jobs.map(job => `
+                <div class="card">
+                    <h3>${job.job_title}</h3>
+                    <p><strong>Description:</strong> ${job.job_description || ""}</p>
+                    <p><strong>Skills:</strong> ${job.required_skills || ""}</p>
+                    <p><strong>Education:</strong> ${job.required_education || ""}</p>
+                    <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Work Mode:</strong> ${job.work_mode || ""}</p>
+                    <p><strong>Location:</strong> ${job.job_location || ""}</p>
+                </div>
+            `).join("");
+        }
+
+        async function loadApplications() {
+            const response = await fetch("/api/jobs/applications", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const applications = await response.json();
+            const applicationsList = document.getElementById("applicationsList");
+
+            if (!response.ok) {
+                applicationsList.innerHTML = "<p>Unable to load applications.</p>";
+                return;
+            }
+
+            if (applications.length === 0) {
+                applicationsList.innerHTML = "<p>No applications yet.</p>";
+                return;
+            }
+
+            applicationsList.innerHTML = applications.map(app => `
+                <div class="card">
+                    <h3>${app.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Applied For:</strong> ${app.job_title || ""}</p>
+                    <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>
+                    <p><strong>Email:</strong> ${app.email || ""}</p>
+                    <p><strong>Contact:</strong> ${app.contact || ""}</p>
+                    <p><strong>Education:</strong> ${app.education || ""}</p>
+                    <p><strong>Major:</strong> ${app.major || ""}</p>
+                    <p><strong>Experience:</strong> ${app.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${app.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${app.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${app.preferred_location || ""}</p>
+
+                    <button onclick="updateApplicationStatus(${app.application_id}, 'accepted')">Accept</button>
+                    <button onclick="updateApplicationStatus(${app.application_id}, 'rejected')">Reject</button>
+                </div>
+            `).join("");
+        }
+
+        async function updateApplicationStatus(applicationId, status) {
+            const response = await fetch(`/api/jobs/applications/${applicationId}/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ status })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                loadApplications();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        async function loadCandidates() {
+            const keyword = document.getElementById("candidateKeyword").value;
+            const education = document.getElementById("candidateEducation").value;
+            const location = document.getElementById("candidateLocation").value;
+            const workMode = document.getElementById("candidateWorkMode").value;
+            const minExperience = document.getElementById("candidateExperience").value;
+
+            const queryParams = new URLSearchParams();
+
+            if (keyword) queryParams.append("keyword", keyword);
+            if (education) queryParams.append("education", education);
+            if (location) queryParams.append("location", location);
+            if (workMode) queryParams.append("work_mode", workMode);
+            if (minExperience) queryParams.append("min_experience", minExperience);
+
+            const response = await fetch("/api/candidates?" + queryParams.toString(), {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const candidates = await response.json();
+            document.getElementById("totalCandidates").textContent = candidates.length;
+            const candidatesList = document.getElementById("candidatesList");
+
+            if (!response.ok) {
+                candidatesList.innerHTML = "<p>Unable to load candidates.</p>";
+                return;
+            }
+
+            if (candidates.length === 0) {
+                candidatesList.innerHTML = "<p>No matching candidates found.</p>";
+                return;
+            }
+
+            candidatesList.innerHTML = candidates.map(candidate => `
+                <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                    <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Email:</strong> ${candidate.email || ""}</p>
+                    <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
+                    <p><strong>Education:</strong> ${candidate.education || ""}</p>
+                    <p><strong>Major:</strong> ${candidate.major || ""}</p>
+                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
+                </div>
+            `).join("");
+        }
+
+        async function loadRecommendedCandidates() {
+            const jobId = document.getElementById("recommendationJobSelect").value;
+            const list = document.getElementById("recommendedCandidatesList");
+
+            if (!jobId) {
+                list.innerHTML = "<p>Please create or select a job first.</p>";
+                return;
+            }
+
+            const response = await fetch("/api/recommendations/candidates/" + jobId, {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const candidates = await response.json();
+
+            if (!response.ok) {
+                list.innerHTML = "<p>Unable to load recommended candidates.</p>";
+                return;
+            }
+
+            if (candidates.length === 0) {
+                list.innerHTML = "<p>No recommended candidates found.</p>";
+                return;
+            }
+
+            list.innerHTML = candidates.map(candidate => `
+                <div class="card">
+                    <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Match Score:</strong> ${candidate.match_score}</p>
+                    <p><strong>Email:</strong> ${candidate.email || ""}</p>
+                    <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
+                    <p><strong>Education:</strong> ${candidate.education || ""}</p>
+                    <p><strong>Major:</strong> ${candidate.major || ""}</p>
+                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
+                </div>
+            `).join("");
+        }
+
+        function clearCandidateSearch() {
+            document.getElementById("candidateKeyword").value = "";
+            document.getElementById("candidateEducation").value = "";
+            document.getElementById("candidateLocation").value = "";
+            document.getElementById("candidateWorkMode").value = "";
+            document.getElementById("candidateExperience").value = "";
+
+            loadCandidates();
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        loadEmployerProfile();
+        loadMyJobs();
+        loadCandidates();
+        loadCandidates();
+    </script>
+</body>
+</html>

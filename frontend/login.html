@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Talent Matching Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-card">
+            <h1>Welcome Back</h1>
+            <p>Login to continue to your dashboard.</p>
+
+            <form id="loginForm">
+                <label>Email:</label>
+                <input type="email" id="email" required>
+
+                <label>Password:</label>
+                <input type="password" id="password" required>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <p id="message"></p>
+
+            <p>No account? <a href="register.html">Register</a></p>
+            <p><a href="index.html">Back to Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+
+                if (data.user.role === "candidate") {
+                    window.location.href = "candidate-dashboard.html";
+                } else if (data.user.role === "employer") {
+                    window.location.href = "employer-dashboard.html";
+                }
+            } else {
+                document.getElementById("message").textContent = data.error;
+                document.getElementById("message").style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>
