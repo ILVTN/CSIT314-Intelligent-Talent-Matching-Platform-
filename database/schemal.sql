@@ -1,5 +1,11 @@
+-- Drop the database if it exists to ensure a clean start
+DROP DATABASE IF EXISTS talent_platform;
+
+-- Create the database and switch to it
 CREATE DATABASE talent_platform;
 USE talent_platform;
+
+-- Create all tables in the correct order
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,7 +27,7 @@ CREATE TABLE candidates (
     skills TEXT,
     preferred_work_mode VARCHAR(100),
     preferred_location VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE employers (
@@ -30,7 +36,7 @@ CREATE TABLE employers (
     company_name VARCHAR(255),
     company_info TEXT,
     contact VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE jobs (
@@ -45,7 +51,7 @@ CREATE TABLE jobs (
     work_mode VARCHAR(100),
     job_location VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employer_id) REFERENCES employers(id)
+    FOREIGN KEY (employer_id) REFERENCES employers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE applications (
@@ -53,5 +59,7 @@ CREATE TABLE applications (
     candidate_id INT NOT NULL,
     job_id INT NOT NULL,
     status VARCHAR(100) DEFAULT 'submitted',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (candidate_id) REFERENCES candidates(id) ON DELETE CASCADE,
+    FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
 );

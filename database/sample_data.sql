@@ -1,16 +1,7 @@
+-- Switch to the correct database
 USE talent_platform;
 
-DROP TABLE applications;
-DROP TABLE jobs;
-DROP TABLE candidates;
-DROP TABLE employers;
-DROP TABLE users;
-
-ALTER TABLE applications AUTO_INCREMENT = 1;
-ALTER TABLE jobs AUTO_INCREMENT = 1;
-ALTER TABLE candidates AUTO_INCREMENT = 1;
-ALTER TABLE employers AUTO_INCREMENT = 1;
-ALTER TABLE users AUTO_INCREMENT = 1;
+-- Insert all the sample data
 
 INSERT INTO users (email, password, role, membership)
 VALUES
