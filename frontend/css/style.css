@@ -61,6 +61,7 @@ button:hover {
     padding: 20px 60px;
 }
 
+/* Navigation bar css */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -76,6 +77,13 @@ button:hover {
     text-decoration: none;
     margin-left: 20px;
     font-weight: bold;
+    display: inline-block;
+    transition: 0.3s ease;
+}
+
+.navbar a:hover {
+    transform: translateY(-4px);
+    color: #dbeafe;
 }
 
 .nav-btn {
@@ -83,8 +91,17 @@ button:hover {
     color: #2563eb !important;
     padding: 10px 16px;
     border-radius: 8px;
+    transition: 0.3s ease;
 }
 
+.nav-btn:hover {
+    background: #1d4ed8;
+    color: white !important;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* HERO compo css */
 .hero-content {
     max-width: 700px;
     margin-top: 120px;
@@ -102,16 +119,59 @@ button:hover {
     margin-bottom: 30px;
 }
 
-.secondary-btn {
+.hero-content a {
+   text-decoration: none;
+}
+
+a button {
+    font-size: 18px;
+}
+
+.register-btn {
     background: white;
-    color: #2563eb;
+    color: #1d4ed8;
+    border: 1px solid black;
+    transition: 0.3s ease;
+}
+
+.register-btn:hover {
+    color: white;
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn {
+    color: #1d4ed8;
+    background: white;
     margin-left: 10px;
+    border: 1px solid black;
+    transition: 0.3s ease;
 }
 
-.secondary-btn:hover {
-    background: #e5e7eb;
+.login-btn:hover {
+    color: white;
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
 }
 
+/* INDEX MAIN TITLE CSS */
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.page-title p {
+    color: #666;
+}
+
+/**/
 .auth-page {
     min-height: 100vh;
     background: linear-gradient(135deg, #1e3a8a, #7c3aed);
