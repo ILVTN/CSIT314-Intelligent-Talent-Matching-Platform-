@@ -208,16 +208,17 @@ a button {
     color: black;
     margin-top: 8px;
     margin-bottom: 4px;
-    display: block;
+    display: block; 
     letter-spacing: 0.3px;
 }
 
-.auth-card input {
+.auth-card input, .auth-card select {
     margin-bottom: 10px;
     font-size: 16px;
 }
 
-#auth-login {
+/* login button */
+.auth-submit {
     margin-top: 12px;
     background: #2563eb;
     color: white;
@@ -229,7 +230,7 @@ a button {
     font-size: 18px;
 }
 
-#auth-login:hover {
+.auth-submit:hover {
     background: #1d4ed8;
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
@@ -241,7 +242,8 @@ a button {
     margin-top: 20px;
 }
 
-.auth-register {
+/* first button */
+.auth-switch {
     display: inline-block;
     text-align: center;
     text-decoration: none;
@@ -254,12 +256,12 @@ a button {
     flex: 1;
 }
 
-.auth-register:hover {
+.auth-switch:hover {
     background: #1d4ed8;
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
 }
-
+/* back button */
 .auth-back {
     display: inline-block;
     text-align: center;
