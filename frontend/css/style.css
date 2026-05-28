@@ -171,7 +171,7 @@ a button {
     color: #666;
 }
 
-/**/
+/* Login page css */
 .auth-page {
     min-height: 100vh;
     background: linear-gradient(135deg, #1e3a8a, #7c3aed);
@@ -194,21 +194,94 @@ a button {
     margin-top: 0;
 }
 
+.auth-card p {
+    font-size: 18px;
+}
+
 .auth-card form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
 }
 
-.auth-card input,
-.auth-card select {
-    max-width: 100%;
+.auth-card label {
+    font-size: 16px;
+    color: black;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    display: block;
+    letter-spacing: 0.3px;
 }
 
-.auth-card button {
+.auth-card input {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#auth-login {
     margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    font-size: 18px;
 }
 
+#auth-login:hover {
+    background: #1d4ed8;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.auth-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.auth-register {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    flex: 1;
+}
+
+.auth-register:hover {
+    background: #1d4ed8;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.auth-back {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: white;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    flex: 1;
+}
+
+.auth-back:hover {
+    background: #1d4ed8;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/**/
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
