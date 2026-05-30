@@ -8,13 +8,13 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <h2>TalentMatch</h2>
-            <a href="#company">Company Profile</a>
-            <a href="#create-job">Create Job</a>
-            <a href="#my-jobs">My Jobs</a>
-            <a href="#applications">Applications</a>
-            <a href="#recommended">Recommended Candidates</a>
-            <a href="#search">Search Candidates</a>
-            <a href="#membership">Membership</a>
+            <a href="#company" class="nav-link">Company Profile</a>
+            <a href="#create-job" class="nav-link">Create Job</a>
+            <a href="#my-jobs" class="nav-link">My Jobs</a>
+            <a href="#applications" class="nav-link">Applications</a>
+            <a href="#recommended" class="nav-link">Recommended Candidates</a>
+            <a href="#search" class="nav-link">Search Candidates</a>
+            <a href="#membership" class="nav-link">Membership</a>
             <button onclick="logout()">Logout</button>
         </aside>
 
@@ -99,6 +99,48 @@
                 <p id="jobMessage"></p>
             </div>
 
+            <!-- Modal for Editing a Job -->
+            <div id="editJobModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+                <div class="card" style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px;">
+                    <span onclick="closeEditModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                    <h2>Edit Job Posting</h2>
+                    <form id="editJobForm">
+                        <input type="hidden" id="edit_job_id">
+                        <label>Job Title:</label><br>
+                        <input type="text" id="edit_job_title" required><br><br>
+
+                        <label>Company Information:</label><br>
+                        <textarea id="edit_job_company_info"></textarea><br><br>
+
+                        <label>Job Description:</label><br>
+                        <textarea id="edit_job_description" required></textarea><br><br>
+
+                        <label>Required Education:</label><br>
+                        <input type="text" id="edit_required_education"><br><br>
+
+                        <label>Required Skills:</label><br>
+                        <textarea id="edit_required_skills"></textarea><br><br>
+
+                        <label>Years of Experience:</label><br>
+                        <input type="number" id="edit_years_experience"><br><br>
+
+                        <label>Work Mode:</label><br>
+                        <select id="edit_work_mode">
+                            <option value="">Select work mode</option>
+                            <option value="Remote">Remote</option>
+                            <option value="On-site">On-site</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select><br><br>
+
+                        <label>Job Location:</label><br>
+                        <input type="text" id="edit_job_location"><br><br>
+
+                        <button type="submit">Save Changes</button>
+                    </form>
+                    <p id="editJobMessage"></p>
+                </div>
+            </div>
+
             <div class="card" id="my-jobs">
                 <h2>My Job Postings</h2>
                 <div id="jobsList"></div>
@@ -175,6 +217,36 @@
         if (!token || !user || user.role !== "employer") {
             window.location.href = "login.html";
         }
+
+        // --- Page Navigation Logic ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.card');
+
+        function showSection(id) {
+            sections.forEach(section => {
+                if (section.id === id) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === `#${id}`) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                showSection(targetId);
+            });
+        });
 
         document.getElementById("membershipStatus").textContent = user.membership || "free";
         document.getElementById("employerMembership").textContent = user.membership || "free";
@@ -279,7 +351,8 @@
                 document.getElementById("jobMessage").textContent = data.message;
                 document.getElementById("jobMessage").style.color = "green";
                 document.getElementById("jobForm").reset();
-                loadMyJobs();
+                loadMyJobs(); // This will now correctly refresh the list
+                showSection('my-jobs'); // Switch to the "My Jobs" page to show the new job
             } else {
                 document.getElementById("jobMessage").textContent = data.error;
                 document.getElementById("jobMessage").style.color = "red";
@@ -317,13 +390,94 @@
                 <div class="card">
                     <h3>${job.job_title}</h3>
                     <p><strong>Description:</strong> ${job.job_description || ""}</p>
-                    <p><strong>Skills:</strong> ${job.required_skills || ""}</p>
-                    <p><strong>Education:</strong> ${job.required_education || ""}</p>
+                    <p><strong>Skills:</strong> ${job.required_skills || "N/A"}</p>
                     <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
-                    <p><strong>Work Mode:</strong> ${job.work_mode || ""}</p>
-                    <p><strong>Location:</strong> ${job.job_location || ""}</p>
+                    <div>
+                        <button onclick="openEditModal(${job.id})">Edit</button>
+                        <button class="logout-btn" onclick="deleteJob(${job.id})">Delete</button>
+                    </div>
                 </div>
             `).join("");
+        }
+
+        async function openEditModal(jobId) {
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const job = await response.json();
+
+            if (response.ok) {
+                document.getElementById('edit_job_id').value = job.id;
+                document.getElementById('edit_job_title').value = job.job_title || '';
+                document.getElementById('edit_job_company_info').value = job.company_info || '';
+                document.getElementById('edit_job_description').value = job.job_description || '';
+                document.getElementById('edit_required_education').value = job.required_education || '';
+                document.getElementById('edit_required_skills').value = job.required_skills || '';
+                document.getElementById('edit_years_experience').value = job.years_experience || '';
+                document.getElementById('edit_work_mode').value = job.work_mode || '';
+                document.getElementById('edit_job_location').value = job.job_location || '';
+
+                document.getElementById('editJobModal').style.display = 'block';
+            } else {
+                alert('Error loading job data: ' + job.error);
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editJobModal').style.display = 'none';
+        }
+
+        document.getElementById("editJobForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const jobId = document.getElementById('edit_job_id').value;
+
+            const jobData = {
+                job_title: document.getElementById("edit_job_title").value,
+                company_info: document.getElementById("edit_job_company_info").value,
+                job_description: document.getElementById("edit_job_description").value,
+                required_education: document.getElementById("edit_required_education").value,
+                required_skills: document.getElementById("edit_required_skills").value,
+                years_experience: document.getElementById("edit_years_experience").value,
+                work_mode: document.getElementById("edit_work_mode").value,
+                job_location: document.getElementById("edit_job_location").value
+            };
+
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(jobData)
+            });
+
+            const data = await response.json();
+            const messageEl = document.getElementById("editJobMessage");
+
+            if (response.ok) {
+                messageEl.textContent = data.message;
+                messageEl.style.color = "green";
+                loadMyJobs(); // Refresh the job list
+                setTimeout(closeEditModal, 1500); // Close modal after success
+            } else {
+                messageEl.textContent = data.error;
+                messageEl.style.color = "red";
+            }
+        });
+
+        async function deleteJob(jobId) {
+            if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+                return;
+            }
+
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                method: 'DELETE',
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            const data = await response.json();
+            alert(data.message || data.error);
+            loadMyJobs(); // Refresh the list
         }
 
         async function loadApplications() {
@@ -498,7 +652,10 @@
         loadEmployerProfile();
         loadMyJobs();
         loadCandidates();
-        loadCandidates();
+        loadApplications();
+
+        // Show the first section by default
+        showSection('company');
     </script>
 </body>
 </html>

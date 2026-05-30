@@ -62,6 +62,97 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
+// GET A SINGLE JOB BY ID (for editing)
+router.get("/:jobId", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "employer") {
+            return res.status(403).json({ error: "Only employers can access this." });
+        }
+
+        const { jobId } = req.params;
+
+        const [jobs] = await pool.query(
+            "SELECT * FROM jobs WHERE id = ?",
+            [jobId]
+        );
+
+        if (jobs.length === 0) {
+            return res.status(404).json({ error: "Job not found." });
+        }
+
+        res.json(jobs[0]);
+
+    } catch (error) {
+        console.error("Get single job error:", error);
+        res.status(500).json({ error: "Server error loading job." });
+    }
+});
+
+// UPDATE A JOB
+router.put("/:jobId", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "employer") {
+            return res.status(403).json({ error: "Only employers can update jobs." });
+        }
+
+        const { jobId } = req.params;
+        const {
+            job_title,
+            company_info,
+            job_description,
+            required_education,
+            required_skills,
+            years_experience,
+            work_mode,
+            job_location
+        } = req.body;
+
+        if (!job_title || !job_description) {
+            return res.status(400).json({ error: "Job title and description are required." });
+        }
+
+        await pool.query(
+            `UPDATE jobs SET 
+                job_title = ?, company_info = ?, job_description = ?, 
+                required_education = ?, required_skills = ?, years_experience = ?, 
+                work_mode = ?, job_location = ?
+             WHERE id = ?`,
+            [
+                job_title, company_info, job_description, required_education,
+                required_skills, years_experience, work_mode, job_location, jobId
+            ]
+        );
+
+        res.json({ message: "Job updated successfully." });
+
+    } catch (error) {
+        console.error("Update job error:", error);
+        res.status(500).json({ error: "Server error updating job." });
+    }
+});
+
+// DELETE A JOB
+router.delete("/:jobId", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "employer") {
+            return res.status(403).json({ error: "Only employers can delete jobs." });
+        }
+
+        const { jobId } = req.params;
+        
+        const [result] = await pool.query("DELETE FROM jobs WHERE id = ?", [jobId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Job not found." });
+        }
+
+        res.json({ message: "Job deleted successfully." });
+    } catch (error) {
+        console.error("Delete job error:", error);
+        res.status(500).json({ error: "Server error deleting job." });
+    }
+});
+
 // GET JOBS CREATED BY CURRENT EMPLOYER
 router.get("/my-jobs", authMiddleware, async (req, res) => {
     try {
