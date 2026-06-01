@@ -460,3 +460,7 @@ a button {
     color: #dc2626;
     font-weight: bold;
 }
+
+#jobsList {
+    margin-top: 10px;
+}
