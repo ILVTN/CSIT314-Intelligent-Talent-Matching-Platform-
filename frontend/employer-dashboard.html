@@ -6,7 +6,9 @@
     <title>Employer Dashboard - Talent Matching Platform</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
+    <script src="js/loginStatus.js"></script>
 </head>
+
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -214,12 +216,9 @@
     </div>
 
     <script>
+        protectPage("employer");
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
-
-        if (!token || !user || user.role !== "employer") {
-            window.location.href = "login.html";
-        }
+        const user = getLoggedInUser();
 
         document.getElementById("membershipStatus").textContent = user.membership || "free";
         document.getElementById("employerMembership").textContent = user.membership || "free";
