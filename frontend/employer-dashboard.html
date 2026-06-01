@@ -227,10 +227,10 @@
             const response = await fetch("/api/auth/membership", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                    userId: user.id,
                     membership: "member"
                 })
             });
@@ -240,9 +240,13 @@
             if (response.ok) {
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
+
                 document.getElementById("membershipStatus").textContent = "member";
+                document.getElementById("employerMembership").textContent = "member";
+
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
+
                 if (document.getElementById("recommendationJobSelect").value) {
                     loadRecommendedCandidates();
                 }
@@ -501,7 +505,7 @@
             }
 
             applicationsList.innerHTML = applications.map(app => `
-                <div class="card">
+                <div class="application-card">
                     <h3>${app.full_name || "Unnamed Candidate"}</h3>
                     <p><strong>Applied For:</strong> ${app.job_title || ""}</p>
                     <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>
@@ -618,7 +622,7 @@
             }
 
             list.innerHTML = candidates.map(candidate => `
-                <div class="card">
+                <div class="candidate-card">
                     <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
                     <p><strong>Match Score:</strong> ${candidate.match_score}</p>
                     <p><strong>Email:</strong> ${candidate.email || ""}</p>

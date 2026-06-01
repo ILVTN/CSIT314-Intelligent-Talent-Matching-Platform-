@@ -1,4 +1,5 @@
-const express = require("express");
+
+const authMiddleware = require("../middleware/authMiddleware");const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../db");
@@ -117,9 +118,10 @@ router.post("/login", async (req, res) => {
 });
 
 // UPGRADE MEMBERSHIP
-router.put("/membership", async (req, res) => {
+router.put("/membership", authMiddleware, async (req, res) => {
     try {
-        const { userId, membership } = req.body;
+        const { membership } = req.body;
+        const userId = req.user.id;
 
         if (!userId || !membership) {
             return res.status(400).json({ error: "User ID and membership are required." });

@@ -151,10 +151,10 @@
             const response = await fetch("/api/auth/membership", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                    userId: user.id,
                     membership: "member"
                 })
             });
@@ -164,9 +164,13 @@
             if (response.ok) {
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
+
                 document.getElementById("membershipStatus").textContent = "member";
+                document.getElementById("candidateMembership").textContent = "member";
+
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
+
                 loadRecommendedJobs();
             } else {
                 document.getElementById("membershipMessage").textContent = data.error;

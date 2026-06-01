@@ -286,33 +286,6 @@ router.get("/:jobId", authMiddleware, async (req, res) => {
 
         const { jobId } = req.params;
 
-        const [jobs] = await pool.query(
-            "SELECT * FROM jobs WHERE id = ?",
-            [jobId]
-        );
-
-        if (jobs.length === 0) {
-            return res.status(404).json({ error: "Job not found." });
-        }
-
-        res.json(jobs[0]);
-
-    } catch (error) {
-        console.error("Get single job error:", error);
-        res.status(500).json({ error: "Server error loading job." });
-    }
-});
-
-// UPDATE A JOB
-// UPDATE A JOB
-router.put("/:jobId", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "employer") {
-            return res.status(403).json({ error: "Only employers can update jobs." });
-        }
-
-        const { jobId } = req.params;
-
         const [employerRows] = await pool.query(
             "SELECT id FROM employers WHERE user_id = ?",
             [req.user.id]
@@ -324,63 +297,20 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
 
         const employerId = employerRows[0].id;
 
-        const {
-            job_title,
-            company_info,
-            job_description,
-            required_education,
-            required_skills,
-            years_experience,
-            work_mode,
-            job_location
-        } = req.body;
-
-        if (!job_title || !job_description) {
-            return res.status(400).json({ error: "Job title and description are required." });
-        }
-
-        if (years_experience && Number(years_experience) < 0) {
-            return res.status(400).json({ error: "Years of experience cannot be negative." });
-        }
-
-        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
-            return res.status(400).json({ error: "Invalid work mode." });
-        }
-
-        const [result] = await pool.query(
-            `UPDATE jobs SET 
-                job_title = ?, 
-                company_info = ?, 
-                job_description = ?, 
-                required_education = ?, 
-                required_skills = ?, 
-                years_experience = ?, 
-                work_mode = ?, 
-                job_location = ?
-             WHERE id = ? AND employer_id = ?`,
-            [
-                job_title,
-                company_info,
-                job_description,
-                required_education,
-                required_skills,
-                years_experience || 0,
-                work_mode,
-                job_location,
-                jobId,
-                employerId
-            ]
+        const [jobs] = await pool.query(
+            "SELECT * FROM jobs WHERE id = ? AND employer_id = ?",
+            [jobId, employerId]
         );
 
-        if (result.affectedRows === 0) {
+        if (jobs.length === 0) {
             return res.status(404).json({ error: "Job not found or you do not own this job." });
         }
 
-        res.json({ message: "Job updated successfully." });
+        res.json(jobs[0]);
 
     } catch (error) {
-        console.error("Update job error:", error);
-        res.status(500).json({ error: "Server error updating job." });
+        console.error("Get single job error:", error);
+        res.status(500).json({ error: "Server error loading job." });
     }
 });
 
@@ -523,32 +453,6 @@ router.put("/applications/:applicationId/status", authMiddleware, async (req, re
     }
 });
 
-// GET A SINGLE JOB BY ID FOR EDITING
-router.get("/:jobId", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "employer") {
-            return res.status(403).json({ error: "Only employers can access this." });
-        }
-
-        const { jobId } = req.params;
-
-        const [jobs] = await pool.query(
-            "SELECT * FROM jobs WHERE id = ?",
-            [jobId]
-        );
-
-        if (jobs.length === 0) {
-            return res.status(404).json({ error: "Job not found." });
-        }
-
-        res.json(jobs[0]);
-
-    } catch (error) {
-        console.error("Get single job error:", error);
-        res.status(500).json({ error: "Server error loading job." });
-    }
-});
-
 // UPDATE A JOB
 router.put("/:jobId", authMiddleware, async (req, res) => {
     try {
@@ -557,6 +461,17 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
         }
 
         const { jobId } = req.params;
+
+        const [employerRows] = await pool.query(
+            "SELECT id FROM employers WHERE user_id = ?",
+            [req.user.id]
+        );
+
+        if (employerRows.length === 0) {
+            return res.status(404).json({ error: "Employer profile not found." });
+        }
+
+        const employerId = employerRows[0].id;
 
         const {
             job_title,
@@ -573,7 +488,15 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
             return res.status(400).json({ error: "Job title and description are required." });
         }
 
-        await pool.query(
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
+            return res.status(400).json({ error: "Invalid work mode." });
+        }
+
+        const [result] = await pool.query(
             `UPDATE jobs SET 
                 job_title = ?, 
                 company_info = ?, 
@@ -583,93 +506,30 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
                 years_experience = ?, 
                 work_mode = ?, 
                 job_location = ?
-             WHERE id = ?`,
+             WHERE id = ? AND employer_id = ?`,
             [
                 job_title,
                 company_info,
                 job_description,
                 required_education,
                 required_skills,
-                years_experience,
+                years_experience || 0,
                 work_mode,
                 job_location,
-                jobId
+                jobId,
+                employerId
             ]
         );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Job not found or you do not own this job." });
+        }
 
         res.json({ message: "Job updated successfully." });
 
     } catch (error) {
         console.error("Update job error:", error);
         res.status(500).json({ error: "Server error updating job." });
-    }
-});
-
-// DELETE A JOB
-router.delete("/:jobId", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "employer") {
-            return res.status(403).json({ error: "Only employers can delete jobs." });
-        }
-
-        const { jobId } = req.params;
-
-        const [result] = await pool.query(
-            "DELETE FROM jobs WHERE id = ?",
-            [jobId]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Job not found." });
-        }
-
-        res.json({ message: "Job deleted successfully." });
-
-    } catch (error) {
-        console.error("Delete job error:", error);
-        res.status(500).json({ error: "Server error deleting job." });
-    }
-});
-
-// CANDIDATE APPLY FOR JOB
-router.post("/:jobId/apply", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "candidate") {
-            return res.status(403).json({ error: "Only candidates can apply for jobs." });
-        }
-
-        const { jobId } = req.params;
-
-        const [candidateRows] = await pool.query(
-            "SELECT id FROM candidates WHERE user_id = ?",
-            [req.user.id]
-        );
-
-        if (candidateRows.length === 0) {
-            return res.status(404).json({ error: "Candidate profile not found." });
-        }
-
-        const candidateId = candidateRows[0].id;
-
-        const [existing] = await pool.query(
-            "SELECT id FROM applications WHERE candidate_id = ? AND job_id = ?",
-            [candidateId, jobId]
-        );
-
-        if (existing.length > 0) {
-            return res.status(400).json({ error: "You already applied for this job." });
-        }
-
-        await pool.query(
-            "INSERT INTO applications (candidate_id, job_id, status) VALUES (?, ?, ?)",
-            [candidateId, jobId, "submitted"]
-        );
-
-        res.status(201).json({ message: "Application submitted successfully." });
-
-    } catch (error) {
-        console.error("Apply job error:", error);
-        res.status(500).json({ error: "Server error applying for job." });
     }
 });
 
