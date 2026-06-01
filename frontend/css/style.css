@@ -38,6 +38,20 @@ h1, h2, h3 {
     margin-top: 0;
 }
 
+.application-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.application-card h3 {
+    margin-top: 0;
+}
+
 .job-card {
     background: #ffffff;
     border: 1px solid #ddd;
@@ -54,6 +68,15 @@ h1, h2, h3 {
 
 .job-card p {
     margin: 8px 0;
+}
+
+#jobsList,
+#recommendedJobsList,
+#myApplicationsList,
+#applicationsList,
+#recommendedCandidatesList,
+#candidatesList {
+    margin-top: 24px;
 }
 
 input, textarea, select {
@@ -499,8 +522,4 @@ a button {
 .status-rejected {
     color: #dc2626;
     font-weight: bold;
-}
-
-#jobsList {
-    margin-top: 10px;
 }

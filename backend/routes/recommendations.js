@@ -97,7 +97,14 @@ router.get("/jobs", authMiddleware, async (req, res) => {
 
         recommendations.sort((a, b) => b.match_score - a.match_score);
 
-        const result = req.user.membership === "member"
+        const [userRows] = await pool.query(
+            "SELECT membership FROM users WHERE id = ?",
+            [req.user.id]
+        );
+
+        const membership = userRows[0]?.membership || "free";
+
+        const result = membership === "member"
             ? recommendations
             : recommendations.slice(0, 10);
 
@@ -184,7 +191,14 @@ router.get("/candidates/:jobId", authMiddleware, async (req, res) => {
 
         recommendations.sort((a, b) => b.match_score - a.match_score);
 
-        const result = req.user.membership === "member"
+        const [userRows] = await pool.query(
+            "SELECT membership FROM users WHERE id = ?",
+            [req.user.id]
+        );
+
+        const membership = userRows[0]?.membership || "free";
+
+        const result = membership === "member"
             ? recommendations
             : recommendations.slice(0, 10);
 

@@ -1,3 +1,4 @@
+const Fuse = require("fuse.js");
 const express = require("express");
 const pool = require("../db");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -45,6 +46,14 @@ router.put("/profile", authMiddleware, async (req, res) => {
             preferred_work_mode,
             preferred_location
         } = req.body;
+
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (preferred_work_mode && !["Remote", "On-site", "Hybrid"].includes(preferred_work_mode)) {
+            return res.status(400).json({ error: "Invalid preferred work mode." });
+        }
 
         await pool.query(
             `UPDATE candidates 
@@ -104,18 +113,6 @@ router.get("/", authMiddleware, async (req, res) => {
 
         const params = [];
 
-        if (keyword) {
-            sql += `
-                AND (
-                    LOWER(candidates.full_name) LIKE ?
-                    OR LOWER(candidates.skills) LIKE ?
-                    OR LOWER(candidates.major) LIKE ?
-                )
-            `;
-            const searchValue = `%${keyword.toLowerCase()}%`;
-            params.push(searchValue, searchValue, searchValue);
-        }
-
         if (education) {
             sql += ` AND LOWER(candidates.education) LIKE ?`;
             params.push(`%${education.toLowerCase()}%`);
@@ -140,7 +137,25 @@ router.get("/", authMiddleware, async (req, res) => {
 
         const [candidates] = await pool.query(sql, params);
 
-        res.json(candidates);
+        let results = candidates;
+
+        if (keyword) {
+            const fuse = new Fuse(candidates, {
+                keys: [
+                    "full_name",
+                    "education",
+                    "major",
+                    "skills",
+                    "preferred_location",
+                    "preferred_work_mode"
+                ],
+                threshold: 0.4
+            });
+
+            results = fuse.search(keyword).map(result => result.item);
+        }
+
+        res.json(results);
 
     } catch (error) {
         console.error("Search candidates error:", error);
