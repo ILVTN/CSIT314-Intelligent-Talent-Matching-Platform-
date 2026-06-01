@@ -28,20 +28,20 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#my-jobs'">
                     <h3 id="totalMyJobs">0</h3>
                     <p>My Job Postings</p>
-                </div>
+                </button>
 
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#search'">
                     <h3 id="totalCandidates">0</h3>
                     <p>Candidates</p>
-                </div>
+                </button>
 
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#membership'">
                     <h3 id="employerMembership">Free</h3>
                     <p>Membership</p>
-                </div>
+                </button>
             </div>
 
             <div class="card" id="company">
@@ -221,36 +221,6 @@
             window.location.href = "login.html";
         }
 
-        // --- Page Navigation Logic ---
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('main.dashboard-content > .card');
-
-        function showSection(id) {
-            sections.forEach(section => {
-                if (section.id === id) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === `#${id}`) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                showSection(targetId);
-            });
-        });
-
         document.getElementById("membershipStatus").textContent = user.membership || "free";
         document.getElementById("employerMembership").textContent = user.membership || "free";
 
@@ -354,8 +324,8 @@
                 document.getElementById("jobMessage").textContent = data.message;
                 document.getElementById("jobMessage").style.color = "green";
                 document.getElementById("jobForm").reset();
-                loadMyJobs(); // This will now correctly refresh the list
-                showSection('my-jobs'); // Switch to the "My Jobs" page to show the new job
+                loadMyJobs();
+                window.location.href = "#my-jobs";
             } else {
                 document.getElementById("jobMessage").textContent = data.error;
                 document.getElementById("jobMessage").style.color = "red";
@@ -604,7 +574,7 @@
             }
 
             candidatesList.innerHTML = candidates.map(candidate => `
-                <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <div class="candidate-card">
                     <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
                     <p><strong>Email:</strong> ${candidate.email || ""}</p>
                     <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
@@ -681,9 +651,6 @@
         loadMyJobs();
         loadCandidates();
         loadApplications();
-
-        // Show the first section by default
-        showSection('company');
     </script>
 </body>
 </html>
