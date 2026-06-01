@@ -224,8 +224,8 @@
         if (!token || !user || user.role !== "employer") {
             window.location.replace("login.html");
         } else {
-            document.getElementById("membershipStatus").textContent = user.membership || "free";
-            document.getElementById("employerMembership").textContent = user.membership || "free";
+            document.getElementById("membershipStatus").textContent = user.membership || "Free";
+            document.getElementById("employerMembership").textContent = user.membership || "Free";
 
             loadEmployerProfile();
             loadMyJobs();
@@ -251,8 +251,8 @@
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
 
-                document.getElementById("membershipStatus").textContent = "member";
-                document.getElementById("employerMembership").textContent = "member";
+                document.getElementById("membershipStatus").textContent = "Member";
+                document.getElementById("employerMembership").textContent = "Member";
 
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
