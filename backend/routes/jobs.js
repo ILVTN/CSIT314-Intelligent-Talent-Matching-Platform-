@@ -38,6 +38,14 @@ router.post("/", authMiddleware, async (req, res) => {
             return res.status(400).json({ error: "Job title and description are required." });
         }
 
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
+            return res.status(400).json({ error: "Invalid work mode." });
+        }
+
         await pool.query(
             `INSERT INTO jobs 
             (employer_id, job_title, company_info, job_description, required_education, required_skills, years_experience, work_mode, job_location)
@@ -329,6 +337,14 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
 
         if (!job_title || !job_description) {
             return res.status(400).json({ error: "Job title and description are required." });
+        }
+
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
+            return res.status(400).json({ error: "Invalid work mode." });
         }
 
         const [result] = await pool.query(

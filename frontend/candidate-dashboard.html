@@ -265,7 +265,7 @@
             }
 
             jobsList.innerHTML = jobs.map(job => `
-                <div class="card">
+                <div class="job-card">
                     <h3>${job.job_title}</h3>
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
                     <p><strong>Description:</strong> ${job.job_description || ""}</p>
@@ -301,7 +301,7 @@
             }
 
             list.innerHTML = jobs.map(job => `
-                <div class="card">
+                <div class="job-card">
                     <h3>${job.job_title}</h3>
                     <p><strong>Match Score:</strong> ${job.match_score}</p>
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
@@ -357,7 +357,7 @@
             }
 
             list.innerHTML = applications.map(app => `
-                <div class="card">
+                <div class="application-card">
                     <h3>${app.job_title || ""}</h3>
                     <p><strong>Company:</strong> ${app.company_name || ""}</p>
                     <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>

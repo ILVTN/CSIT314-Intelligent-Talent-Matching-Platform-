@@ -36,6 +36,16 @@ router.put("/profile", authMiddleware, async (req, res) => {
             return res.status(403).json({ error: "Only candidates can update this." });
         }
 
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (preferred_work_mode && !["Remote", "On-site", "Hybrid"].includes(preferred_work_mode)) {
+            return res.status(400).json({ error: "Invalid preferred work mode." });
+        }
+
+        res.json({ message: "Candidate profile updated successfully." });
+
         const {
             full_name,
             contact,
@@ -70,9 +80,6 @@ router.put("/profile", authMiddleware, async (req, res) => {
                 req.user.id
             ]
         );
-
-        res.json({ message: "Candidate profile updated successfully." });
-
     } catch (error) {
         console.error("Update candidate profile error:", error);
         res.status(500).json({ error: "Server error updating candidate profile." });
