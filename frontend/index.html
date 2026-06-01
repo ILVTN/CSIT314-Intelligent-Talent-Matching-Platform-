@@ -3,8 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <title>Intelligent Talent Matching Platform</title>
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .hero-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+            margin-top: 120px;
+        }
+
+        .hero-content {
+            max-width: 700px;
+            margin-top: 0;
+        }
+
+        .hero-logo-box {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-logo {
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="hero">
@@ -16,19 +59,27 @@
             </div>
         </nav>
 
-        <div class="hero-content">
-            <h1>Find the right job or the right talent faster</h1>
-            <p>Intelligent Talent Matching Platform connects candidates with suitable job opportunities, location and work preferences, 
-              & helps employers discover the best candidates based on skills, experience, education.</p>
+        <div class="hero-main">
+            <div class="hero-content">
+                <h1>Find the right job or the right talent faster</h1>
+                <p>Intelligent Talent Matching Platform connects candidates with suitable job opportunities, location and work preferences, 
+                  & helps employers discover the best candidates based on skills, experience, education.</p>
 
-            <a href="register.html">
-                <button class="register-btn">Get Started</button>
-            </a>
+                <a href="register.html">
+                    <button class="register-btn">Get Started</button>
+                </a>
 
-            <a href="login.html">
-                <button class="login-btn">Login</button>
-            </a>
+                <a href="login.html">
+                    <button class="login-btn">Login</button>
+                </a>
+            </div>
+            
+            <div class="hero-logo-text">
+                <h2>TALENT</h2>
+                <p>MATCH</p>
+            </div>
         </div>
+
     </div>
 
     <div class="page">
