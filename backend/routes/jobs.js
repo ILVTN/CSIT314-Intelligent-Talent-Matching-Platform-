@@ -294,6 +294,7 @@ router.get("/:jobId", authMiddleware, async (req, res) => {
 });
 
 // UPDATE A JOB
+// UPDATE A JOB
 router.put("/:jobId", authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== "employer") {
@@ -301,6 +302,18 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
         }
 
         const { jobId } = req.params;
+
+        const [employerRows] = await pool.query(
+            "SELECT id FROM employers WHERE user_id = ?",
+            [req.user.id]
+        );
+
+        if (employerRows.length === 0) {
+            return res.status(404).json({ error: "Employer profile not found." });
+        }
+
+        const employerId = employerRows[0].id;
+
         const {
             job_title,
             company_info,
@@ -316,17 +329,34 @@ router.put("/:jobId", authMiddleware, async (req, res) => {
             return res.status(400).json({ error: "Job title and description are required." });
         }
 
-        await pool.query(
+        const [result] = await pool.query(
             `UPDATE jobs SET 
-                job_title = ?, company_info = ?, job_description = ?, 
-                required_education = ?, required_skills = ?, years_experience = ?, 
-                work_mode = ?, job_location = ?
-             WHERE id = ?`,
+                job_title = ?, 
+                company_info = ?, 
+                job_description = ?, 
+                required_education = ?, 
+                required_skills = ?, 
+                years_experience = ?, 
+                work_mode = ?, 
+                job_location = ?
+             WHERE id = ? AND employer_id = ?`,
             [
-                job_title, company_info, job_description, required_education,
-                required_skills, years_experience, work_mode, job_location, jobId
+                job_title,
+                company_info,
+                job_description,
+                required_education,
+                required_skills,
+                years_experience || 0,
+                work_mode,
+                job_location,
+                jobId,
+                employerId
             ]
         );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Job not found or you do not own this job." });
+        }
 
         res.json({ message: "Job updated successfully." });
 
@@ -344,14 +374,39 @@ router.delete("/:jobId", authMiddleware, async (req, res) => {
         }
 
         const { jobId } = req.params;
-        
-        const [result] = await pool.query("DELETE FROM jobs WHERE id = ?", [jobId]);
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Job not found." });
+        const [employerRows] = await pool.query(
+            "SELECT id FROM employers WHERE user_id = ?",
+            [req.user.id]
+        );
+
+        if (employerRows.length === 0) {
+            return res.status(404).json({ error: "Employer profile not found." });
         }
 
+        const employerId = employerRows[0].id;
+
+        const [jobRows] = await pool.query(
+            "SELECT id FROM jobs WHERE id = ? AND employer_id = ?",
+            [jobId, employerId]
+        );
+
+        if (jobRows.length === 0) {
+            return res.status(404).json({ error: "Job not found or you do not own this job." });
+        }
+
+        await pool.query(
+            "DELETE FROM applications WHERE job_id = ?",
+            [jobId]
+        );
+
+        await pool.query(
+            "DELETE FROM jobs WHERE id = ? AND employer_id = ?",
+            [jobId, employerId]
+        );
+
         res.json({ message: "Job deleted successfully." });
+
     } catch (error) {
         console.error("Delete job error:", error);
         res.status(500).json({ error: "Server error deleting job." });
