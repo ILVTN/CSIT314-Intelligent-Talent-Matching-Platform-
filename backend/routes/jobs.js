@@ -314,6 +314,86 @@ router.get("/:jobId", authMiddleware, async (req, res) => {
     }
 });
 
+// UPDATE A JOB
+router.put("/:jobId", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "employer") {
+            return res.status(403).json({ error: "Only employers can update jobs." });
+        }
+
+        const { jobId } = req.params;
+
+        const [employerRows] = await pool.query(
+            "SELECT id FROM employers WHERE user_id = ?",
+            [req.user.id]
+        );
+
+        if (employerRows.length === 0) {
+            return res.status(404).json({ error: "Employer profile not found." });
+        }
+
+        const employerId = employerRows[0].id;
+
+        const {
+            job_title,
+            company_info,
+            job_description,
+            required_education,
+            required_skills,
+            years_experience,
+            work_mode,
+            job_location
+        } = req.body;
+
+        if (!job_title || !job_description) {
+            return res.status(400).json({ error: "Job title and description are required." });
+        }
+
+        if (years_experience && Number(years_experience) < 0) {
+            return res.status(400).json({ error: "Years of experience cannot be negative." });
+        }
+
+        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
+            return res.status(400).json({ error: "Invalid work mode." });
+        }
+
+        const [result] = await pool.query(
+            `UPDATE jobs SET 
+                job_title = ?, 
+                company_info = ?, 
+                job_description = ?, 
+                required_education = ?, 
+                required_skills = ?, 
+                years_experience = ?, 
+                work_mode = ?, 
+                job_location = ?
+             WHERE id = ? AND employer_id = ?`,
+            [
+                job_title,
+                company_info,
+                job_description,
+                required_education,
+                required_skills,
+                years_experience || 0,
+                work_mode,
+                job_location,
+                jobId,
+                employerId
+            ]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Job not found or you do not own this job." });
+        }
+
+        res.json({ message: "Job updated successfully." });
+
+    } catch (error) {
+        console.error("Update job error:", error);
+        res.status(500).json({ error: "Server error updating job." });
+    }
+});
+
 // DELETE A JOB
 router.delete("/:jobId", authMiddleware, async (req, res) => {
     try {
@@ -450,86 +530,6 @@ router.put("/applications/:applicationId/status", authMiddleware, async (req, re
     } catch (error) {
         console.error("Update application status error:", error);
         res.status(500).json({ error: "Server error updating application status." });
-    }
-});
-
-// UPDATE A JOB
-router.put("/:jobId", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "employer") {
-            return res.status(403).json({ error: "Only employers can update jobs." });
-        }
-
-        const { jobId } = req.params;
-
-        const [employerRows] = await pool.query(
-            "SELECT id FROM employers WHERE user_id = ?",
-            [req.user.id]
-        );
-
-        if (employerRows.length === 0) {
-            return res.status(404).json({ error: "Employer profile not found." });
-        }
-
-        const employerId = employerRows[0].id;
-
-        const {
-            job_title,
-            company_info,
-            job_description,
-            required_education,
-            required_skills,
-            years_experience,
-            work_mode,
-            job_location
-        } = req.body;
-
-        if (!job_title || !job_description) {
-            return res.status(400).json({ error: "Job title and description are required." });
-        }
-
-        if (years_experience && Number(years_experience) < 0) {
-            return res.status(400).json({ error: "Years of experience cannot be negative." });
-        }
-
-        if (work_mode && !["Remote", "On-site", "Hybrid"].includes(work_mode)) {
-            return res.status(400).json({ error: "Invalid work mode." });
-        }
-
-        const [result] = await pool.query(
-            `UPDATE jobs SET 
-                job_title = ?, 
-                company_info = ?, 
-                job_description = ?, 
-                required_education = ?, 
-                required_skills = ?, 
-                years_experience = ?, 
-                work_mode = ?, 
-                job_location = ?
-             WHERE id = ? AND employer_id = ?`,
-            [
-                job_title,
-                company_info,
-                job_description,
-                required_education,
-                required_skills,
-                years_experience || 0,
-                work_mode,
-                job_location,
-                jobId,
-                employerId
-            ]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Job not found or you do not own this job." });
-        }
-
-        res.json({ message: "Job updated successfully." });
-
-    } catch (error) {
-        console.error("Update job error:", error);
-        res.status(500).json({ error: "Server error updating job." });
     }
 });
 
