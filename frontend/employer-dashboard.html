@@ -217,11 +217,21 @@
 
     <script>
         protectPage("employer");
+
         const token = localStorage.getItem("token");
         const user = getLoggedInUser();
 
-        document.getElementById("membershipStatus").textContent = user.membership || "free";
-        document.getElementById("employerMembership").textContent = user.membership || "free";
+        if (!token || !user || user.role !== "employer") {
+            window.location.replace("login.html");
+        } else {
+            document.getElementById("membershipStatus").textContent = user.membership || "free";
+            document.getElementById("employerMembership").textContent = user.membership || "free";
+
+            loadEmployerProfile();
+            loadMyJobs();
+            loadCandidates();
+            loadApplications();
+        }
 
         async function upgradeMembership() {
             const response = await fetch("/api/auth/membership", {
@@ -645,11 +655,6 @@
             localStorage.removeItem("user");
             window.location.href = "login.html";
         }
-
-        loadEmployerProfile();
-        loadMyJobs();
-        loadCandidates();
-        loadApplications();
     </script>
 </body>
 </html>
