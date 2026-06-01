@@ -25,6 +25,24 @@ h1, h2, h3 {
     display: none; /* Hide all cards by default */
 }
 
+.job-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.job-card h3 {
+    margin-top: 0;
+    color: #2563eb;
+}
+
+.job-card p {
+    margin: 8px 0;
+}
+
 input, textarea, select {
     width: 100%;
     max-width: 420px;

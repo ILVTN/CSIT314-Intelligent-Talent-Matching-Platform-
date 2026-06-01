@@ -220,7 +220,7 @@
 
         // --- Page Navigation Logic ---
         const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('main.dashboard-content > .card');
 
         function showSection(id) {
             sections.forEach(section => {
@@ -387,11 +387,17 @@
             `).join("");
 
             jobsList.innerHTML = jobs.map(job => `
-                <div class="card">
+                <div class="job-card">
                     <h3>${job.job_title}</h3>
-                    <p><strong>Description:</strong> ${job.job_description || ""}</p>
-                    <p><strong>Skills:</strong> ${job.required_skills || "N/A"}</p>
+
+                    <p><strong>Company Info:</strong> ${job.company_info || "N/A"}</p>
+                    <p><strong>Description:</strong> ${job.job_description || "N/A"}</p>
+                    <p><strong>Required Education:</strong> ${job.required_education || "N/A"}</p>
+                    <p><strong>Required Skills:</strong> ${job.required_skills || "N/A"}</p>
                     <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Work Mode:</strong> ${job.work_mode || "N/A"}</p>
+                    <p><strong>Location:</strong> ${job.job_location || "N/A"}</p>
+
                     <div>
                         <button onclick="openEditModal(${job.id})">Edit</button>
                         <button class="logout-btn" onclick="deleteJob(${job.id})">Delete</button>
