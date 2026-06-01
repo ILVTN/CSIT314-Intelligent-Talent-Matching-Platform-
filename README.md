@@ -26,12 +26,11 @@ This project is developed for the CSIT314 group project. The system follows the 
 
 - Register and log in as an employer/recruiter
 - Create and manage company profile
-- Create, edit, publish, unpublish, and delete job postings
+- Create, edit, and delete job postings
 - Browse candidate profiles
 - Search candidates
 - Filter candidates by skills, education, and experience
 - Receive Top-10 recommended candidates
-- Shortlist candidates
 - Update application status
 
 ## Project Structure
