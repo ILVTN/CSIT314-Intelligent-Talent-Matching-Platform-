@@ -243,6 +243,9 @@
                 document.getElementById("membershipStatus").textContent = "member";
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
+                if (document.getElementById("recommendationJobSelect").value) {
+                    loadRecommendedCandidates();
+                }
             } else {
                 document.getElementById("membershipMessage").textContent = data.error;
                 document.getElementById("membershipMessage").style.color = "red";

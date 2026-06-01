@@ -105,18 +105,6 @@ router.get("/", authMiddleware, async (req, res) => {
 
         const params = [];
 
-        if (keyword) {
-            sql += `
-                AND (
-                    LOWER(candidates.full_name) LIKE ?
-                    OR LOWER(candidates.skills) LIKE ?
-                    OR LOWER(candidates.major) LIKE ?
-                )
-            `;
-            const searchValue = `%${keyword.toLowerCase()}%`;
-            params.push(searchValue, searchValue, searchValue);
-        }
-
         if (education) {
             sql += ` AND LOWER(candidates.education) LIKE ?`;
             params.push(`%${education.toLowerCase()}%`);

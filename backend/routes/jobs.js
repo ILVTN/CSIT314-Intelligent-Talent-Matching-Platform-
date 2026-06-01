@@ -70,28 +70,21 @@ router.get("/my-jobs", authMiddleware, async (req, res) => {
             return res.status(403).json({ error: "Only employers can access this." });
         }
 
-        console.log("Current user:", req.user);
-
         const [employers] = await pool.query(
             "SELECT id FROM employers WHERE user_id = ?",
             [req.user.id]
         );
-
-        console.log("Employer rows:", employers);
 
         if (employers.length === 0) {
             return res.status(404).json({ error: "Employer profile not found." });
         }
 
         const employerId = employers[0].id;
-        console.log("Employer ID:", employerId);
 
         const [jobs] = await pool.query(
             "SELECT * FROM jobs WHERE employer_id = ? ORDER BY created_at DESC",
             [employerId]
         );
-
-        console.log("Jobs found:", jobs);
 
         res.json(jobs);
 
@@ -223,18 +216,6 @@ router.get("/", authMiddleware, async (req, res) => {
         `;
 
         const params = [];
-
-        if (keyword) {
-            sql += `
-                AND (
-                    LOWER(jobs.job_description) LIKE ?
-                    OR LOWER(jobs.job_title) LIKE ?
-                    OR LOWER(jobs.required_skills) LIKE ?
-                )
-            `;
-            const searchValue = `%${keyword.toLowerCase()}%`;
-            params.push(searchValue, searchValue, searchValue);
-        }
 
         if (location) {
             sql += ` AND LOWER(jobs.job_location) LIKE ?`;
@@ -523,76 +504,6 @@ router.put("/applications/:applicationId/status", authMiddleware, async (req, re
     } catch (error) {
         console.error("Update application status error:", error);
         res.status(500).json({ error: "Server error updating application status." });
-    }
-});
-
-// GET ALL JOBS + SEARCH/FILTER FOR CANDIDATES
-router.get("/", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== "candidate") {
-            return res.status(403).json({ error: "Only candidates can view jobs." });
-        }
-
-        const {
-            keyword,
-            location,
-            work_mode,
-            education,
-            max_experience
-        } = req.query;
-
-        let sql = `
-            SELECT 
-                jobs.*,
-                employers.company_name
-            FROM jobs
-            JOIN employers ON jobs.employer_id = employers.id
-            WHERE 1 = 1
-        `;
-
-        const params = [];
-
-        if (keyword) {
-            sql += `
-                AND (
-                    LOWER(jobs.job_description) LIKE ?
-                    OR LOWER(jobs.job_title) LIKE ?
-                    OR LOWER(jobs.required_skills) LIKE ?
-                )
-            `;
-            const searchValue = `%${keyword.toLowerCase()}%`;
-            params.push(searchValue, searchValue, searchValue);
-        }
-
-        if (location) {
-            sql += ` AND LOWER(jobs.job_location) LIKE ?`;
-            params.push(`%${location.toLowerCase()}%`);
-        }
-
-        if (work_mode) {
-            sql += ` AND jobs.work_mode = ?`;
-            params.push(work_mode);
-        }
-
-        if (education) {
-            sql += ` AND LOWER(jobs.required_education) LIKE ?`;
-            params.push(`%${education.toLowerCase()}%`);
-        }
-
-        if (max_experience) {
-            sql += ` AND jobs.years_experience <= ?`;
-            params.push(Number(max_experience));
-        }
-
-        sql += ` ORDER BY jobs.created_at DESC`;
-
-        const [jobs] = await pool.query(sql, params);
-
-        res.json(jobs);
-
-    } catch (error) {
-        console.error("Search jobs error:", error);
-        res.status(500).json({ error: "Server error searching jobs." });
     }
 });
 

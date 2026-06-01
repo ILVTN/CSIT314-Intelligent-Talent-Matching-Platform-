@@ -167,6 +167,7 @@
                 document.getElementById("membershipStatus").textContent = "member";
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
+                loadRecommendedJobs();
             } else {
                 document.getElementById("membershipMessage").textContent = data.error;
                 document.getElementById("membershipMessage").style.color = "red";
