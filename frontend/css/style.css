@@ -24,6 +24,20 @@ h1, h2, h3 {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.candidate-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.candidate-card h3 {
+    margin-top: 0;
+}
+
 .job-card {
     background: #ffffff;
     border: 1px solid #ddd;
@@ -444,6 +458,32 @@ a button {
 .stat-card p {
     margin-bottom: 0;
     color: #6b7280;
+}
+
+.stat-button {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    background: inherit;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-button:focus {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+.stat-card.stat-button:hover {
+    background: inherit !important;
+    color: inherit !important;
 }
 
 .status-submitted {
