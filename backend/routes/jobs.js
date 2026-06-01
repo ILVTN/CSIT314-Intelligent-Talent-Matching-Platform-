@@ -1,3 +1,4 @@
+const Fuse = require("fuse.js");
 const express = require("express");
 const pool = require("../db");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -259,7 +260,27 @@ router.get("/", authMiddleware, async (req, res) => {
 
         const [jobs] = await pool.query(sql, params);
 
-        res.json(jobs);
+        let results = jobs;
+
+        if (keyword) {
+            const fuse = new Fuse(jobs, {
+                keys: [
+                    "job_title",
+                    "company_name",
+                    "company_info",
+                    "job_description",
+                    "required_skills",
+                    "required_education",
+                    "work_mode",
+                    "job_location"
+                ],
+                threshold: 0.4
+            });
+
+            results = fuse.search(keyword).map(result => result.item);
+        }
+
+        res.json(results);
 
     } catch (error) {
         console.error("Search jobs error:", error);
