@@ -215,24 +215,100 @@ button:hover {
    text-decoration: none;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
+    .hero {
+        min-height: auto;
+        padding: 28px 20px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .navbar h2 {
+        font-size: 22px;
+        margin: 0;
+        text-align: center;
+        width: 100%;
+    }
+
+    .navbar div {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .navbar a {
+        margin-left: 0;
+        text-align: center;
+        padding: 10px 16px;
+        border-radius: 8px;
+        flex: 1;
+    }
+
+    .navbar a:first-child {
+        background: white;
+        color: #2563eb;
+    }
+
+    .navbar a:first-child:hover {
+        background: #1d4ed8;
+        color: white;
+    }
+
+    .nav-btn {
+        background: white;
+        color: #2563eb !important;
+    }
+
     .hero-main {
         flex-direction: column;
         text-align: center;
-        margin-top: 70px;
-        gap: 40px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 85px;
+        margin-right: 0;
+        gap: 44px;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-content h1 {
+        font-size: 36px;
+        line-height: 1.25;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+        line-height: 1.6;
     }
 
     .hero-logo-text {
+        min-width: auto;
         margin-right: 0;
     }
 
     .hero-logo-text h2 {
-        font-size: 52px;
+        font-size: 60px;
+        letter-spacing: -2px;
     }
 
     .hero-logo-text p {
-        font-size: 26px;
+        font-size: 30px;
+        letter-spacing: 8px;
+    }
+
+    .hero-content a {
+        display: block;
+    }
+
+    .register-btn,
+    .login-btn {
+        display: none;
     }
 }
 
@@ -577,3 +653,163 @@ a button {
 #popupCancelBtn:hover {
     background: rgb(112, 3, 3);
 }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    padding: 30px 15px;
+    overflow-y: auto;
+}
+
+.modal-box {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 28px; 
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    position: relative;
+}
+
+.modal-box h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+    padding-right: 35px; 
+} 
+
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    color: #777;
+    font-size: 30px;  
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #111;
+}
+
+.modal-box form {
+    width: 100%;
+}
+
+.modal-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.modal-box input,
+.modal-box textarea,
+.modal-box select {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    margin-bottom: 18px;
+}
+
+.modal-box textarea { 
+    min-height: 90px;
+    resize: vertical;
+}
+
+.modal-box button[type="submit"] {
+    margin-top: 5px;
+}
+
+/* Mobile dashboard layout */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        display: block;
+        min-height: auto;
+    }
+
+    .sidebar {
+        position: static;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 18px;
+        border-radius: 0;
+    }
+
+    .sidebar h2 {
+        margin-bottom: 16px;
+        text-align: left;
+    }
+
+    .sidebar a,
+    .sidebar button {
+        text-align: left;
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-content {
+        margin-left: 0;
+        width: 100%;
+        box-sizing: border-box; 
+        padding: 16px;
+    }
+ 
+    .dashboard-header { 
+        padding: 18px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-card h3 {
+        font-size: 26px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    input,
+    textarea,
+    select {  
+        max-width: 100%;
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 6px;
+    }
+
+    .job-card,
+    .candidate-card,
+    .application-card {
+        padding: 16px;  
+        overflow-wrap: break-word;
+    } 
+
+    .popup-box {
+        width: 92%;
+        max-width: 92%;
+    }
+
+    .modal-box {  
+        width: 92%;
+        max-width: 92%;
+        padding: 20px;
+    }
+} 

@@ -106,40 +106,40 @@
             </div>
 
             <!-- Modal for Editing a Job -->
-            <div id="editJobModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-                <div class="card" style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px;">
-                    <span onclick="closeEditModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <div id="editJobModal" class="modal-overlay">
+                <div class="modal-box">
+                    <span onclick="closeEditModal()" class="modal-close">&times;</span>
                     <h2>Edit Job Posting</h2>
                     <form id="editJobForm">
                         <input type="hidden" id="edit_job_id">
-                        <label>Job Title:</label><br>
-                        <input type="text" id="edit_job_title" required><br><br>
+                        <label>Job Title:</label>
+                        <input type="text" id="edit_job_title" required>
 
-                        <label>Company Information:</label><br>
-                        <textarea id="edit_job_company_info"></textarea><br><br>
+                        <label>Company Information:</label>
+                        <textarea id="edit_job_company_info"></textarea>
 
-                        <label>Job Description:</label><br>
-                        <textarea id="edit_job_description" required></textarea><br><br>
+                        <label>Job Description:</label>
+                        <textarea id="edit_job_description" required></textarea>
 
-                        <label>Required Education:</label><br>
-                        <input type="text" id="edit_required_education"><br><br>
+                        <label>Required Education:</label>
+                        <input type="text" id="edit_required_education">
 
-                        <label>Required Skills:</label><br>
-                        <textarea id="edit_required_skills"></textarea><br><br>
+                        <label>Required Skills:</label>
+                        <textarea id="edit_required_skills"></textarea>
 
-                        <label>Years of Experience:</label><br>
-                        <input type="number" id="edit_years_experience"><br><br>
+                        <label>Years of Experience:</label>
+                        <input type="number" id="edit_years_experience">
 
-                        <label>Work Mode:</label><br>
+                        <label>Work Mode:</label>
                         <select id="edit_work_mode">
                             <option value="">Select work mode</option>
                             <option value="Remote">Remote</option>
                             <option value="On-site">On-site</option>
                             <option value="Hybrid">Hybrid</option>
-                        </select><br><br>
+                        </select>
 
                         <label>Job Location:</label><br>
-                        <input type="text" id="edit_job_location"><br><br>
+                        <input type="text" id="edit_job_location">
 
                         <button type="submit">Save Changes</button>
                     </form>
@@ -518,7 +518,7 @@
             }); 
 
             const applications = await response.json();
-            const updateApplicationStatus = document.getElementById("applicationsList");
+            const applicationsList = document.getElementById("applicationsList");
 
             if (!response.ok) {
                 applicationsList.innerHTML = "<p>Unable to load applications.</p>";
