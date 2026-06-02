@@ -26,7 +26,7 @@
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <h1>Employer Dashboard</h1>
-                <p>Welcome, employer.</p>
+                <p id="welcomeMessage">Welcome, employer.</p>
             </div>
 
             <div class="stats-grid">
@@ -82,7 +82,7 @@
                     <input type="text" id="required_education" placeholder="Bachelor, Master, Diploma"><br><br>
 
                     <label>Required Skills:</label><br>
-                    <textarea id="required_skills" placeholder="JavaScript, SQL, Node.js"></textarea><br><br>
+                    <textarea id="required_skills"></textarea><br><br>
 
                     <label>Years of Experience:</label><br>
                     <input type="number" id="years_experience"><br><br>
@@ -208,7 +208,7 @@
             <div class="card" id="membership">
                 <h2>Membership</h2>
                 <p>Current Membership: <strong id="membershipStatus"></strong></p>
-                <button onclick="upgradeMembership()">Upgrade to Member</button>
+                <button onclick="upgradeMembership()" id="upgradeBtn">Upgrade to Member</button>
                 <p id="membershipMessage"></p>
             </div>
 
@@ -224,9 +224,7 @@
         if (!token || !user || user.role !== "employer") {
             window.location.replace("login.html");
         } else {
-            document.getElementById("membershipStatus").textContent = user.membership || "Free";
-            document.getElementById("employerMembership").textContent = user.membership || "Free";
-
+            updateMembershipUI();
             loadEmployerProfile();
             loadMyJobs();
             loadCandidates();
@@ -250,10 +248,7 @@
             if (response.ok) {
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
-
-                document.getElementById("membershipStatus").textContent = "Member";
-                document.getElementById("employerMembership").textContent = "Member";
-
+                updateMembershipUI();
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
 
@@ -276,6 +271,7 @@
             const data = await response.json();
 
             if (response.ok) {
+                document.getElementById("welcomeMessage").textContent = `Welcome, ${data.company_name || "employer"}.`;
                 document.getElementById("company_name").value = data.company_name || "";
                 document.getElementById("company_info").value = data.company_info || "";
                 document.getElementById("contact").value = data.contact || "";
@@ -383,7 +379,7 @@
                     <p><strong>Description:</strong> ${job.job_description || "N/A"}</p>
                     <p><strong>Required Education:</strong> ${job.required_education || "N/A"}</p>
                     <p><strong>Required Skills:</strong> ${job.required_skills || "N/A"}</p>
-                    <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Years of Experience:</strong> ${job.years_experience || 0} years</p>
                     <p><strong>Work Mode:</strong> ${job.work_mode || "N/A"}</p>
                     <p><strong>Location:</strong> ${job.job_location || "N/A"}</p>
 
@@ -523,7 +519,8 @@
                     <p><strong>Contact:</strong> ${app.contact || ""}</p>
                     <p><strong>Education:</strong> ${app.education || ""}</p>
                     <p><strong>Major:</strong> ${app.major || ""}</p>
-                    <p><strong>Experience:</strong> ${app.years_experience || 0} years</p>
+                    <p><strong>Years of Experience:</strong> ${app.years_experience || 0} years</p>
+                    <p><strong>Work Experience:</strong> ${app.work_experience || ""}</p>
                     <p><strong>Skills:</strong> ${app.skills || ""}</p>
                     <p><strong>Preferred Work Mode:</strong> ${app.preferred_work_mode || ""}</p>
                     <p><strong>Preferred Location:</strong> ${app.preferred_location || ""}</p>
@@ -596,7 +593,8 @@
                     <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
                     <p><strong>Education:</strong> ${candidate.education || ""}</p>
                     <p><strong>Major:</strong> ${candidate.major || ""}</p>
-                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Years of Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Work Experience:</strong> ${candidate.work_experience || ""}</p>
                     <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
                     <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
                     <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
@@ -639,7 +637,8 @@
                     <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
                     <p><strong>Education:</strong> ${candidate.education || ""}</p>
                     <p><strong>Major:</strong> ${candidate.major || ""}</p>
-                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Years of Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Work Experience:</strong> ${candidate.work_experience || ""}</p>
                     <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
                     <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
                     <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
@@ -647,6 +646,27 @@
             `).join("");
         }
 
+        function updateMembershipUI() {
+            const membership = (user.membership || "free").toLowerCase();
+            const upgradeButton = document.getElementById("upgradeBtn");
+
+            if (membership === "member") {
+                document.getElementById("membershipStatus").textContent = "Member";
+                document.getElementById("employerMembership").textContent = "Member";
+
+                if (upgradeButton) {
+                    upgradeButton.style.display = "none";
+                }
+            } else {
+                document.getElementById("membershipStatus").textContent = "Free";
+                document.getElementById("employerMembership").textContent = "Free";
+
+                if (upgradeButton) {
+                    upgradeButton.style.display = "inline-block";
+                }
+            }
+        }
+        
         function clearCandidateSearch() {
             document.getElementById("candidateKeyword").value = "";
             document.getElementById("candidateEducation").value = "";

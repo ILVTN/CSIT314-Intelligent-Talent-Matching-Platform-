@@ -23,7 +23,7 @@
         <main class="dashboard-content">
         <div class="dashboard-header">
             <h1>Candidate Dashboard</h1>
-            <p>Welcome, candidate.</p>
+            <p id="welcomeMessage">Welcome, candidate.</p>
         </div>
 
         <div class="stats-grid">
@@ -57,13 +57,16 @@
                 <input type="text" id="education" placeholder="Bachelor, Master, Diploma"><br><br>
 
                 <label>Major:</label><br>
-                <input type="text" id="major" placeholder="Computer Science"><br><br>
+                <input type="text" id="major" placeholder="Computer Science, Business"><br><br>
 
                 <label>Years of Experience:</label><br>
                 <input type="number" id="years_experience"><br><br>
 
+                <label>Work Experience:</label><br>
+                <textarea id="work_experience" placeholder="Describe your previous jobs, internships, projects"></textarea><br><br>
+                
                 <label>Skills:</label><br>
-                <textarea id="skills" placeholder="JavaScript, Python, SQL"></textarea><br><br>
+                <textarea id="skills"></textarea><br><br>
 
                 <label>Preferred Work Mode:</label><br>
                 <select id="preferred_work_mode">
@@ -74,7 +77,7 @@
                 </select><br><br>
 
                 <label>Preferred Location:</label><br>
-                <input type="text" id="preferred_location" placeholder="Sydney"><br><br>
+                <input type="text" id="preferred_location" placeholder="Sydney, Melbourne"><br><br>
 
                 <button type="submit">Save Profile</button>
             </form>
@@ -132,7 +135,7 @@
         <div class="card" id="membership">
             <h2>Membership</h2>
             <p>Current Membership: <strong id="membershipStatus"></strong></p>
-            <button onclick="upgradeMembership()">Upgrade to Member</button>
+            <button onclick="upgradeMembership()" id="upgradeBtn">Upgrade to Member</button>
             <p id="membershipMessage"></p>
         </div>
 
@@ -148,8 +151,7 @@
         if (!token || !user || user.role !== "candidate") {
             window.location.replace("login.html");
         } else {
-            document.getElementById("membershipStatus").textContent = user.membership || "Free";
-            document.getElementById("candidateMembership").textContent = user.membership || "Free";
+            updateMembershipUI();
 
             loadProfile();
             loadJobs();
@@ -174,10 +176,7 @@
             if (response.ok) {
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
-
-                document.getElementById("membershipStatus").textContent = "Member";
-                document.getElementById("candidateMembership").textContent = "Member";
-
+                updateMembershipUI();
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
 
@@ -198,11 +197,13 @@
             const data = await response.json();
 
             if (response.ok) {
+                document.getElementById("welcomeMessage").textContent = `Welcome, ${data.full_name || "candidate"}.`;
                 document.getElementById("full_name").value = data.full_name || "";
                 document.getElementById("contact").value = data.contact || "";
                 document.getElementById("education").value = data.education || "";
                 document.getElementById("major").value = data.major || "";
                 document.getElementById("years_experience").value = data.years_experience || "";
+                document.getElementById("work_experience").value = data.work_experience || "";
                 document.getElementById("skills").value = data.skills || "";
                 document.getElementById("preferred_work_mode").value = data.preferred_work_mode || "";
                 document.getElementById("preferred_location").value = data.preferred_location || "";
@@ -218,6 +219,7 @@
                 education: document.getElementById("education").value,
                 major: document.getElementById("major").value,
                 years_experience: document.getElementById("years_experience").value,
+                work_experience: document.getElementById("work_experience").value,
                 skills: document.getElementById("skills").value,
                 preferred_work_mode: document.getElementById("preferred_work_mode").value,
                 preferred_location: document.getElementById("preferred_location").value
@@ -284,8 +286,8 @@
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
                     <p><strong>Description:</strong> ${job.job_description || ""}</p>
                     <p><strong>Required Skills:</strong> ${job.required_skills || ""}</p>
-                    <p><strong>Education:</strong> ${job.required_education || ""}</p>
-                    <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Required Education:</strong> ${job.required_education || ""}</p>
+                    <p><strong>Years of Experience:</strong> ${job.years_experience || 0} years</p>
                     <p><strong>Work Mode:</strong> ${job.work_mode || ""}</p>
                     <p><strong>Location:</strong> ${job.job_location || ""}</p>
                     <button onclick="applyJob(${job.id})">Apply</button>
@@ -321,8 +323,8 @@
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
                     <p><strong>Description:</strong> ${job.job_description || ""}</p>
                     <p><strong>Required Skills:</strong> ${job.required_skills || ""}</p>
-                    <p><strong>Education:</strong> ${job.required_education || ""}</p>
-                    <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Required Education:</strong> ${job.required_education || ""}</p>
+                    <p><strong>Years of Experience:</strong> ${job.years_experience || 0} years</p>
                     <p><strong>Work Mode:</strong> ${job.work_mode || ""}</p>
                     <p><strong>Location:</strong> ${job.job_location || ""}</p>
                     <button onclick="applyJob(${job.id})">Apply</button>
@@ -377,12 +379,33 @@
                     <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>
                     <p><strong>Description:</strong> ${app.job_description || ""}</p>
                     <p><strong>Required Skills:</strong> ${app.required_skills || ""}</p>
-                    <p><strong>Education:</strong> ${app.required_education || ""}</p>
-                    <p><strong>Experience:</strong> ${app.years_experience || 0} years</p>
+                    <p><strong>Required Education:</strong> ${app.required_education || ""}</p>
+                    <p><strong>Years of Experience:</strong> ${app.years_experience || 0} years</p>
                     <p><strong>Work Mode:</strong> ${app.work_mode || ""}</p>
                     <p><strong>Location:</strong> ${app.job_location || ""}</p>
                 </div>
             `).join("");
+        }
+
+        function updateMembershipUI() {
+            const membership = (user.membership || "free").toLowerCase();
+            const upgradeButton = document.getElementById("upgradeBtn");
+
+            if (membership === "member") {
+                document.getElementById("membershipStatus").textContent = "Member";
+                document.getElementById("candidateMembership").textContent = "Member";
+
+                if (upgradeButton) {
+                    upgradeButton.style.display = "none";
+                }
+            } else {
+                document.getElementById("membershipStatus").textContent = "Free";
+                document.getElementById("candidateMembership").textContent = "Free";
+
+                if (upgradeButton) {
+                    upgradeButton.style.display = "inline-block";
+                }
+            }
         }
 
         function logout() {

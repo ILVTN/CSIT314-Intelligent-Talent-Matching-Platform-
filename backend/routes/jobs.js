@@ -131,6 +131,7 @@ router.get("/applications", authMiddleware, async (req, res) => {
                 candidates.education,
                 candidates.major,
                 candidates.years_experience,
+                candidates.work_experience,
                 candidates.skills,
                 candidates.preferred_work_mode,
                 candidates.preferred_location,

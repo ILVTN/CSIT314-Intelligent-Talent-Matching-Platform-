@@ -36,7 +36,9 @@ router.put("/profile", authMiddleware, async (req, res) => {
         }
 
         const { company_name, company_info, contact } = req.body;
-
+        if (!company_name) {
+            return res.status(400).json({ error: "Company name is required." });
+        }
         await pool.query(
             `UPDATE employers
              SET company_name = ?,
