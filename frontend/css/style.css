@@ -25,6 +25,61 @@ h1, h2, h3 {
     display: none; /* Hide all cards by default */
 }
 
+.candidate-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.candidate-card h3 {
+    margin-top: 0;
+}
+
+.application-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.application-card h3 {
+    margin-top: 0;
+}
+
+.job-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.job-card h3 {
+    margin-top: 0;
+    color: #2563eb;
+}
+
+.job-card p {
+    margin: 8px 0;
+}
+
+#jobsList,
+#recommendedJobsList,
+#myApplicationsList,
+#applicationsList,
+#recommendedCandidatesList,
+#candidatesList {
+    margin-top: 24px;
+}
+
 input, textarea, select {
     width: 100%;
     max-width: 420px;
@@ -64,6 +119,7 @@ button:hover {
     padding: 20px 60px;
 }
 
+/* Navigation bar css */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -79,6 +135,13 @@ button:hover {
     text-decoration: none;
     margin-left: 20px;
     font-weight: bold;
+    display: inline-block;
+    transition: 0.3s ease;
+}
+
+.navbar a:hover {
+    transform: translateY(-4px);
+    color: #dbeafe;
 }
 
 .nav-btn {
@@ -86,11 +149,55 @@ button:hover {
     color: #2563eb !important;
     padding: 10px 16px;
     border-radius: 8px;
+    transition: 0.3s ease;
 }
 
+.nav-btn:hover {
+    background: #1d4ed8;
+    color: white !important;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* HERO compo css */
 .hero-content {
     max-width: 700px;
+    margin-top: 0;
+}
+
+.hero-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
     margin-top: 120px;
+    margin-right: 120px;
+}
+
+.hero-logo-text {
+    text-align: center;
+    min-width: 360px;
+    margin-right: 80px;
+}
+
+.hero-logo-text h2 {
+    color: #7fa0ff;
+    font-size: 110px;
+    font-weight: 900;
+    letter-spacing: -5px;
+    margin: 0;
+    line-height: 0.9;
+    font-family: 'Arial Black', 'Trebuchet MS', Arial, sans-serif;
+}
+
+.hero-logo-text p {
+    color: white;
+    font-size: 46px;
+    font-weight: bold;
+    letter-spacing: 12px;
+    margin: 0;
+    line-height: 1;
+    font-family: Georgia, 'Times New Roman', serif;
 }
 
 .hero-content h1 {
@@ -105,16 +212,80 @@ button:hover {
     margin-bottom: 30px;
 }
 
-.secondary-btn {
+.hero-content a {
+   text-decoration: none;
+}
+
+@media (max-width: 800px) {
+    .hero-main {
+        flex-direction: column;
+        text-align: center;
+        margin-top: 70px;
+        gap: 40px;
+    }
+
+    .hero-logo-text {
+        margin-right: 0;
+    }
+
+    .hero-logo-text h2 {
+        font-size: 52px;
+    }
+
+    .hero-logo-text p {
+        font-size: 26px;
+    }
+}
+
+a button {
+    font-size: 18px;
+}
+
+.register-btn {
     background: white;
-    color: #2563eb;
+    color: #1d4ed8;
+    border: 1px solid black;
+    transition: 0.3s ease;
+}
+
+.register-btn:hover {
+    color: white;
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn {
+    color: #1d4ed8;
+    background: white;
     margin-left: 10px;
+    border: 1px solid black;
+    transition: 0.3s ease;
 }
 
-.secondary-btn:hover {
-    background: #e5e7eb;
+.login-btn:hover {
+    color: white;
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
 }
 
+/* INDEX MAIN TITLE CSS */
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.page-title p {
+    color: #666;
+}
+
+/* Login page css */
 .auth-page {
     min-height: 100vh;
     background: linear-gradient(135deg, #1e3a8a, #7c3aed);
@@ -137,21 +308,96 @@ button:hover {
     margin-top: 0;
 }
 
+.auth-card p {
+    font-size: 18px;
+}
+
 .auth-card form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
 }
 
-.auth-card input,
-.auth-card select {
-    max-width: 100%;
+.auth-card label {
+    font-size: 16px;
+    color: black;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    display: block; 
+    letter-spacing: 0.3px;
 }
 
-.auth-card button {
+.auth-card input, .auth-card select {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* login button */
+.auth-submit {
     margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    font-size: 18px;
 }
 
+.auth-submit:hover {
+    background: #1d4ed8;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.auth-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* first button */
+.auth-switch {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    flex: 1;
+}
+
+.auth-switch:hover {
+    background: #1d4ed8;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+/* back button */
+.auth-back {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: white;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    flex: 1;
+}
+
+.auth-back:hover {
+    background: #1d4ed8;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/**/
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
@@ -236,6 +482,32 @@ button:hover {
 .stat-card p {
     margin-bottom: 0;
     color: #6b7280;
+}
+
+.stat-button {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    background: inherit;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-button:focus {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+.stat-card.stat-button:hover {
+    background: inherit !important;
+    color: inherit !important;
 }
 
 .status-submitted {

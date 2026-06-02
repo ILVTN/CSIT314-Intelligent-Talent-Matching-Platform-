@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Candidate Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard - Talent Matching Platform</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
+    <script src="js/loginStatus.js"></script>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -23,20 +27,20 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
+            <button class="stat-card stat-button" onclick="window.location.href='#browse'">
                 <h3 id="totalJobs">0</h3>
                 <p>Available Jobs</p>
-            </div>
+            </button>
 
-            <div class="stat-card">
+            <button class="stat-card stat-button" onclick="window.location.href='#recommended'">
                 <h3 id="totalRecommendedJobs">0</h3>
                 <p>Recommended Jobs</p>
-            </div>
+            </button>
 
-            <div class="stat-card">
+            <button class="stat-card stat-button" onclick="window.location.href='#membership'">
                 <h3 id="candidateMembership">Free</h3>
                 <p>Membership</p>
-            </div>
+            </button>
         </div>
 
         <div class="card" id="profile">
@@ -136,24 +140,31 @@
     </div>
 
     <script>
+        protectPage("candidate");
+
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = getLoggedInUser();
 
         if (!token || !user || user.role !== "candidate") {
-            window.location.href = "login.html";
-        }
+            window.location.replace("login.html");
+        } else {
+            document.getElementById("membershipStatus").textContent = user.membership || "Free";
+            document.getElementById("candidateMembership").textContent = user.membership || "Free";
 
-        document.getElementById("membershipStatus").textContent = user.membership || "free";
-        document.getElementById("candidateMembership").textContent = user.membership || "free";
+            loadProfile();
+            loadJobs();
+            loadRecommendedJobs();
+            loadMyApplications();
+        }
 
         async function upgradeMembership() {
             const response = await fetch("/api/auth/membership", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                    userId: user.id,
                     membership: "member"
                 })
             });
@@ -163,9 +174,14 @@
             if (response.ok) {
                 user.membership = "member";
                 localStorage.setItem("user", JSON.stringify(user));
-                document.getElementById("membershipStatus").textContent = "member";
+
+                document.getElementById("membershipStatus").textContent = "Member";
+                document.getElementById("candidateMembership").textContent = "Member";
+
                 document.getElementById("membershipMessage").textContent = data.message;
                 document.getElementById("membershipMessage").style.color = "green";
+
+                loadRecommendedJobs();
             } else {
                 document.getElementById("membershipMessage").textContent = data.error;
                 document.getElementById("membershipMessage").style.color = "red";
@@ -263,7 +279,7 @@
             }
 
             jobsList.innerHTML = jobs.map(job => `
-                <div class="card">
+                <div class="job-card">
                     <h3>${job.job_title}</h3>
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
                     <p><strong>Description:</strong> ${job.job_description || ""}</p>
@@ -299,7 +315,7 @@
             }
 
             list.innerHTML = jobs.map(job => `
-                <div class="card">
+                <div class="job-card">
                     <h3>${job.job_title}</h3>
                     <p><strong>Match Score:</strong> ${job.match_score}</p>
                     <p><strong>Company:</strong> ${job.company_name || ""}</p>
@@ -355,7 +371,7 @@
             }
 
             list.innerHTML = applications.map(app => `
-                <div class="card">
+                <div class="application-card">
                     <h3>${app.job_title || ""}</h3>
                     <p><strong>Company:</strong> ${app.company_name || ""}</p>
                     <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>
@@ -374,11 +390,6 @@
             localStorage.removeItem("user");
             window.location.href = "login.html";
         }
-
-        loadProfile();
-        loadJobs();
-        loadRecommendedJobs();
-        loadMyApplications();
 
         function clearSearch() {
             document.getElementById("searchKeyword").value = "";

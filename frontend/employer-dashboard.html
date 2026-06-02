@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Employer Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - Talent Matching Platform</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
+    <script src="js/loginStatus.js"></script>
 </head>
+
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -25,54 +30,39 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#my-jobs'">
                     <h3 id="totalMyJobs">0</h3>
                     <p>My Job Postings</p>
-                </div>
+                </button>
 
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#search'">
                     <h3 id="totalCandidates">0</h3>
                     <p>Candidates</p>
-                </div>
+                </button>
 
-                <div class="stat-card">
+                <button class="stat-card stat-button" onclick="window.location.href='#membership'">
                     <h3 id="employerMembership">Free</h3>
                     <p>Membership</p>
-                </div>
+                </button>
             </div>
 
             <div class="card" id="company">
-                <!-- Display View -->
-                <div id="company-display" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <h2>Company Overview</h2>
-                        <button onclick="toggleProfileEdit(true)">Edit Profile</button>
-                    </div>
-                    <div class="profile-info-grid">
-                        <div><strong>Company Name</strong><p id="display_company_name"></p></div>
-                        <div><strong>Contact</strong><p id="display_contact"></p></div>
-                        <div style="grid-column: 1 / -1;"><strong>Company Information</strong><p id="display_company_info"></p></div>
-                    </div>
-                </div>
+                <h2>Company Profile</h2>
 
-                <!-- Edit View -->
-                <div id="company-edit">
-                    <h2>Edit Company Profile</h2>
-                    <p>Keep your company details up to date for candidates.</p>
-                    <form id="employerProfileForm">
-                        <label>Company Name:</label><br>
-                        <input type="text" id="company_name"><br><br>
+                <form id="employerProfileForm">
+                    <label>Company Name:</label><br>
+                    <input type="text" id="company_name"><br><br>
 
-                        <label>Company Information:</label><br>
-                        <textarea id="company_info"></textarea><br><br>
+                    <label>Company Information:</label><br>
+                    <textarea id="company_info"></textarea><br><br>
 
-                        <label>Contact:</label><br>
-                        <input type="text" id="contact"><br><br>
-                        <button type="submit">Save Company Profile</button>
-                        <button type="button" onclick="toggleProfileEdit(false)">Cancel</button>
-                    </form>
-                    <p id="profileMessage"></p>
-                </div>
+                    <label>Contact:</label><br>
+                    <input type="text" id="contact"><br><br>
+
+                    <button type="submit">Save Company Profile</button>
+                </form>
+
+            <p id="profileMessage"></p>
             </div>
 
             <div class="card" id="create-job">
@@ -156,55 +146,16 @@
                 </div>
             </div>
 
-            <!-- Modal for Viewing Applicants -->
-            <div id="viewApplicantsModal" style="display:none; position: fixed; z-index: 2; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
-                <div class="card" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 900px; display: block;">
-                    <span onclick="closeApplicantsModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-                    <h2>Applicants for <span id="applicantsJobTitle"></span></h2>
-                    <div id="applicantsModalList"></div>
-                </div>
-            </div>
-
             <div class="card" id="my-jobs">
                 <h2>My Job Postings</h2>
-                <p>Manage your active and draft job postings.</p>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Job Title</th>
-                                <th>Location</th>
-                                <th>Applicants</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="jobsTableBody">
-                            <!-- Job rows will be injected here by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <p id="no-jobs-message" style="display: none; text-align: center; padding: 20px;">You haven't posted any jobs yet. <a href="#create-job" onclick="showSection('create-job')">Create one now!</a></p>
+                <div id="jobsList"></div>
             </div>
             
             <div class="card" id="applications">
-                <h2>Recent Applications</h2>
-                <p>Review candidates who have applied to your jobs.</p>
+                <h2>Applications</h2>
                 <button onclick="loadApplications()">Refresh Applications</button>
                 <br><br>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Candidate</th>
-                                <th>Applying For</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="applicationsTableBody"></tbody>
-                    </table>
-                </div>
-                <p id="no-applications-message" style="display: none; text-align: center; padding: 20px;">No applications received yet.</p>
+                <div id="applicationsList"></div>
             </div>
 
             <div class="card" id="recommended">
@@ -265,119 +216,69 @@
     </div>
 
     <script>
+        protectPage("employer");
+
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = getLoggedInUser();
 
         if (!token || !user || user.role !== "employer") {
-            window.location.href = "login.html";
+            window.location.replace("login.html");
+        } else {
+            document.getElementById("membershipStatus").textContent = user.membership || "Free";
+            document.getElementById("employerMembership").textContent = user.membership || "Free";
+
+            loadEmployerProfile();
+            loadMyJobs();
+            loadCandidates();
+            loadApplications();
         }
-
-        // --- Utility for sanitizing HTML to prevent XSS ---
-        function sanitizeHTML(str) {
-            const temp = document.createElement('div');
-            temp.textContent = str;
-            return temp.innerHTML;
-        }
-        // --- Page Navigation Logic ---
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.card');
-
-        function showSection(id) {
-            sections.forEach(section => {
-                if (section.id === id) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === `#${id}`) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                showSection(targetId);
-            });
-        });
-
-        document.getElementById("membershipStatus").textContent = user.membership || "free";
-        document.getElementById("employerMembership").textContent = user.membership || "free";
 
         async function upgradeMembership() {
-            try {
-                const response = await fetch("/api/auth/membership", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        userId: user.id,
-                        membership: "member"
-                    })
-                });
+            const response = await fetch("/api/auth/membership", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    membership: "member"
+                })
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    user.membership = "member";
-                    localStorage.setItem("user", JSON.stringify(user));
-                    document.getElementById("membershipStatus").textContent = "member";
-                    document.getElementById("membershipMessage").textContent = data.message;
-                    document.getElementById("membershipMessage").style.color = "green";
-                } else {
-                    document.getElementById("membershipMessage").textContent = data.error;
-                    document.getElementById("membershipMessage").style.color = "red";
+            if (response.ok) {
+                user.membership = "member";
+                localStorage.setItem("user", JSON.stringify(user));
+
+                document.getElementById("membershipStatus").textContent = "Member";
+                document.getElementById("employerMembership").textContent = "Member";
+
+                document.getElementById("membershipMessage").textContent = data.message;
+                document.getElementById("membershipMessage").style.color = "green";
+
+                if (document.getElementById("recommendationJobSelect").value) {
+                    loadRecommendedCandidates();
                 }
-            } catch (error) {
-                console.error('Error upgrading membership:', error);
-                document.getElementById("membershipMessage").textContent = 'An unexpected error occurred. Please try again later.';
+            } else {
+                document.getElementById("membershipMessage").textContent = data.error;
                 document.getElementById("membershipMessage").style.color = "red";
             }
         }
 
-        function toggleProfileEdit(isEditing) {
-            document.getElementById('company-display').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('company-edit').style.display = isEditing ? 'block' : 'none';
-        }
-
         async function loadEmployerProfile() {
-            try {
-                const response = await fetch("/api/employers/profile", {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const hasProfileData = data.company_name || data.company_info || data.contact;
-
-                    // Populate the edit form
-                    document.getElementById("company_name").value = data.company_name || "";
-                    document.getElementById("company_info").value = data.company_info || "";
-                    document.getElementById("contact").value = data.contact || "";
-
-                    // Populate the display view
-                    document.getElementById("display_company_name").textContent = data.company_name || "Not set";
-                    document.getElementById("display_company_info").textContent = data.company_info || "Not set";
-                    document.getElementById("display_contact").textContent = data.contact || "Not set";
-                    
-                    // If profile is filled, show display view. Otherwise, show edit form.
-                    toggleProfileEdit(!hasProfileData);
+            const response = await fetch("/api/employers/profile", {
+                headers: {
+                    "Authorization": "Bearer " + token
                 }
-            } catch (error) {
-                console.error('Error loading employer profile:', error);
-                document.getElementById("profileMessage").textContent = 'Failed to load profile data.';
-                document.getElementById("profileMessage").style.color = "red";
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("company_name").value = data.company_name || "";
+                document.getElementById("company_info").value = data.company_info || "";
+                document.getElementById("contact").value = data.contact || "";
             }
         }
 
@@ -390,29 +291,22 @@
                 contact: document.getElementById("contact").value
             };
 
-            try {
-                const response = await fetch("/api/employers/profile", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify(profileData)
-                });
+            const response = await fetch("/api/employers/profile", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(profileData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    document.getElementById("profileMessage").textContent = data.message;
-                    document.getElementById("profileMessage").style.color = "green";
-                    loadEmployerProfile(); // Reload profile to show updated data and switch back to display view
-                } else {
-                    document.getElementById("profileMessage").textContent = data.error;
-                    document.getElementById("profileMessage").style.color = "red";
-                }
-            } catch (error) {
-                console.error('Error saving employer profile:', error);
-                document.getElementById("profileMessage").textContent = 'An unexpected error occurred.';
+            if (response.ok) {
+                document.getElementById("profileMessage").textContent = data.message;
+                document.getElementById("profileMessage").style.color = "green";
+            } else {
+                document.getElementById("profileMessage").textContent = data.error;
                 document.getElementById("profileMessage").style.color = "red";
             }
         });
@@ -431,120 +325,96 @@
                 job_location: document.getElementById("job_location").value
             };
 
-            try {
-                const response = await fetch("/api/jobs", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify(jobData)
-                });
+            const response = await fetch("/api/jobs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(jobData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    document.getElementById("jobMessage").textContent = data.message;
-                    document.getElementById("jobMessage").style.color = "green";
-                    document.getElementById("jobForm").reset();
-                    
-                    console.log('Job created successfully. Refreshing job list...');
-                    await loadMyJobs(); // Await the refresh to ensure data is loaded
-                    console.log('Job list refreshed.');
-                    showSection('my-jobs'); // THEN switch to the section
-                } else {
-                    document.getElementById("jobMessage").textContent = data.error;
-                    document.getElementById("jobMessage").style.color = "red";
-                }
-            } catch (error) {
-                console.error('Error creating job:', error);
-                document.getElementById("jobMessage").textContent = 'An unexpected error occurred.';
+            if (response.ok) {
+                document.getElementById("jobMessage").textContent = data.message;
+                document.getElementById("jobMessage").style.color = "green";
+                document.getElementById("jobForm").reset();
+                loadMyJobs();
+                window.location.href = "#my-jobs";
+            } else {
+                document.getElementById("jobMessage").textContent = data.error;
                 document.getElementById("jobMessage").style.color = "red";
             }
         });
 
         async function loadMyJobs() {
-            try {
-                const [jobsResponse, appsResponse] = await Promise.all([
-                    fetch("/api/jobs/my-jobs", { headers: { "Authorization": "Bearer " + token } }),
-                    fetch("/api/jobs/applications", { headers: { "Authorization": "Bearer " + token } })
-                ]);
-
-                if (!jobsResponse.ok) {
-                    throw new Error('Failed to load jobs');
+            const response = await fetch("/api/jobs/my-jobs", {
+                headers: {
+                    "Authorization": "Bearer " + token
                 }
+            });
 
-                const jobs = await jobsResponse.json();
-                const allApplications = appsResponse.ok ? await appsResponse.json() : [];
-                
-                console.log('Jobs received from server:', jobs); // Debugging line
+            const jobs = await response.json();
+            document.getElementById("totalMyJobs").textContent = jobs.length;
+            const jobsList = document.getElementById("jobsList");
+            const recommendationJobSelect = document.getElementById("recommendationJobSelect");
 
-                document.getElementById("totalMyJobs").textContent = jobs.length;
-                const jobsTableBody = document.getElementById("jobsTableBody");
-                const recommendationJobSelect = document.getElementById("recommendationJobSelect");
-                const noJobsMessage = document.getElementById("no-jobs-message");
-                const jobsTable = document.querySelector('#my-jobs .data-table');
-
-                if (jobs.length === 0) {
-                    jobsTable.style.display = 'none';
-                    noJobsMessage.style.display = 'block';
-                    recommendationJobSelect.innerHTML = "";
-                    jobsTableBody.innerHTML = "";
-                    return;
-                }
-
-                jobsTable.style.display = '';
-                noJobsMessage.style.display = 'none';
-
-                recommendationJobSelect.innerHTML = jobs.map(job => `
-                    <option value="${sanitizeHTML(job.id)}">${sanitizeHTML(job.job_title)}</option>
-                `).join("");
-
-                jobsTableBody.innerHTML = jobs.map(job => {
-                    const applicantCount = allApplications.filter(app => app.job_id === job.id).length;
-                    return `
-                        <tr>
-                            <td><strong>${sanitizeHTML(job.job_title)}</strong></td>
-                            <td>${sanitizeHTML(job.job_location || 'N/A')}</td>
-                            <td><a href="#" onclick="event.preventDefault(); viewApplicants(${job.id}, '${sanitizeHTML(job.job_title)}')">View (${applicantCount})</a></td>
-                            <td class="actions">
-                                <button onclick="openEditModal(${job.id})">Edit</button>
-                                <button class="logout-btn" onclick="deleteJob(${job.id})">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join("");
-            } catch (error) {
-                console.error('Error loading jobs:', error);
-                document.getElementById("jobsTableBody").innerHTML = `<tr><td colspan="4">An unexpected error occurred while loading jobs.</td></tr>`;
+            if (!response.ok) {
+                jobsList.innerHTML = "<p>Unable to load jobs.</p>";
+                return;
             }
+
+            if (jobs.length === 0) {
+                jobsList.innerHTML = "<p>No jobs created yet.</p>";
+                recommendationJobSelect.innerHTML = "";
+                return;
+            }
+
+            recommendationJobSelect.innerHTML = jobs.map(job => `
+                <option value="${job.id}">${job.job_title}</option>
+            `).join("");
+
+            jobsList.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <h3>${job.job_title}</h3>
+
+                    <p><strong>Company Info:</strong> ${job.company_info || "N/A"}</p>
+                    <p><strong>Description:</strong> ${job.job_description || "N/A"}</p>
+                    <p><strong>Required Education:</strong> ${job.required_education || "N/A"}</p>
+                    <p><strong>Required Skills:</strong> ${job.required_skills || "N/A"}</p>
+                    <p><strong>Experience:</strong> ${job.years_experience || 0} years</p>
+                    <p><strong>Work Mode:</strong> ${job.work_mode || "N/A"}</p>
+                    <p><strong>Location:</strong> ${job.job_location || "N/A"}</p>
+
+                    <div>
+                        <button onclick="openEditModal(${job.id})">Edit</button>
+                        <button class="logout-btn" onclick="deleteJob(${job.id})">Delete</button>
+                    </div>
+                </div>
+            `).join("");
         }
 
         async function openEditModal(jobId) {
-            try {
-                const response = await fetch(`/api/jobs/${jobId}`, {
-                    headers: { "Authorization": "Bearer " + token }
-                });
-                const job = await response.json();
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const job = await response.json();
 
-                if (response.ok) {
-                    document.getElementById('edit_job_id').value = job.id;
-                    document.getElementById('edit_job_title').value = job.job_title || '';
-                    document.getElementById('edit_job_company_info').value = job.company_info || '';
-                    document.getElementById('edit_job_description').value = job.job_description || '';
-                    document.getElementById('edit_required_education').value = job.required_education || '';
-                    document.getElementById('edit_required_skills').value = job.required_skills || '';
-                    document.getElementById('edit_years_experience').value = job.years_experience || '';
-                    document.getElementById('edit_work_mode').value = job.work_mode || '';
-                    document.getElementById('edit_job_location').value = job.job_location || '';
+            if (response.ok) {
+                document.getElementById('edit_job_id').value = job.id;
+                document.getElementById('edit_job_title').value = job.job_title || '';
+                document.getElementById('edit_job_company_info').value = job.company_info || '';
+                document.getElementById('edit_job_description').value = job.job_description || '';
+                document.getElementById('edit_required_education').value = job.required_education || '';
+                document.getElementById('edit_required_skills').value = job.required_skills || '';
+                document.getElementById('edit_years_experience').value = job.years_experience || '';
+                document.getElementById('edit_work_mode').value = job.work_mode || '';
+                document.getElementById('edit_job_location').value = job.job_location || '';
 
-                    document.getElementById('editJobModal').style.display = 'block';
-                } else {
-                    alert('Error loading job data: ' + job.error);
-                }
-            } catch (error) {
-                console.error('Error fetching job for edit:', error);
-                alert('An unexpected error occurred while fetching job data.');
+                document.getElementById('editJobModal').style.display = 'block';
+            } else {
+                alert('Error loading job data: ' + job.error);
             }
         }
 
@@ -567,163 +437,120 @@
                 job_location: document.getElementById("edit_job_location").value
             };
 
-            try {
-                const response = await fetch(`/api/jobs/${jobId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify(jobData)
-                });
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(jobData)
+            });
 
-                const data = await response.json();
-                const messageEl = document.getElementById("editJobMessage");
+            const data = await response.json();
+            const messageEl = document.getElementById("editJobMessage");
 
-                if (response.ok) {
-                    messageEl.textContent = data.message;
-                    messageEl.style.color = "green";
-                    loadMyJobs(); // Refresh the job list
-                    setTimeout(closeEditModal, 1500); // Close modal after success
-                } else {
-                    messageEl.textContent = data.error;
-                    messageEl.style.color = "red";
-                }
-            } catch (error) {
-                console.error('Error updating job:', error);
-                document.getElementById("editJobMessage").textContent = 'An unexpected error occurred.';
-                document.getElementById("editJobMessage").style.color = "red";
+            if (response.ok) {
+                messageEl.textContent = data.message;
+                messageEl.style.color = "green";
+
+                await loadMyJobs();
+
+                setTimeout(() => {
+                    closeEditModal();
+                    messageEl.textContent = "";
+                }, 800);
+            } else {
+                messageEl.textContent = data.error || "Failed to update job.";
+                messageEl.style.color = "red";
             }
         });
 
         async function deleteJob(jobId) {
-            if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            if (!confirm("Are you sure you want to delete this job? This will also delete related applications.")) {
                 return;
             }
+
             try {
                 const response = await fetch(`/api/jobs/${jobId}`, {
-                    method: 'DELETE',
-                    headers: { "Authorization": "Bearer " + token }
-                });
-
-                const data = await response.json();
-                alert(data.message || data.error);
-                loadMyJobs(); // Refresh the list
-            } catch (error) {
-                console.error('Error deleting job:', error);
-                alert('An unexpected error occurred while deleting the job.');
-            }
-        }
-
-        async function viewApplicants(jobId, jobTitle) {
-            try {
-                const response = await fetch("/api/jobs/applications", {
-                    headers: { "Authorization": "Bearer " + token }
-                });
-                const allApplications = await response.json();
-
-                if (!response.ok) {
-                    alert('Could not load applicants.');
-                    return;
-                }
-
-                const jobApplicants = allApplications.filter(app => app.job_id === jobId);
-                const modalList = document.getElementById('applicantsModalList');
-                document.getElementById('applicantsJobTitle').textContent = jobTitle;
-
-                if (jobApplicants.length === 0) {
-                    modalList.innerHTML = '<p>No applicants for this job yet.</p>';
-                } else {
-                    modalList.innerHTML = jobApplicants.map(app => `
-                        <div class="card" style="display: block; border-left: 4px solid #2563eb;">
-                            <h4>${sanitizeHTML(app.full_name)} (<span class="status-${app.status}">${sanitizeHTML(app.status)}</span>)</h4>
-                            <p><strong>Email:</strong> ${sanitizeHTML(app.email)}</p>
-                            <p><strong>Skills:</strong> ${sanitizeHTML(app.skills)}</p>
-                        </div>
-                    `).join('');
-                }
-
-                document.getElementById('viewApplicantsModal').style.display = 'block';
-            } catch (error) {
-                console.error('Error viewing applicants:', error);
-                alert('An unexpected error occurred while loading applicants.');
-            }
-        }
-
-        function closeApplicantsModal() {
-            document.getElementById('viewApplicantsModal').style.display = 'none';
-        }
-
-        async function loadApplications() {
-            try {
-                const response = await fetch("/api/jobs/applications", {
+                    method: "DELETE",
                     headers: {
                         "Authorization": "Bearer " + token
                     }
-                });
-
-                const applications = await response.json();
-                const applicationsTableBody = document.getElementById("applicationsTableBody");
-                const noAppsMessage = document.getElementById("no-applications-message");
-                const appsTable = document.querySelector('#applications .data-table');
-
-                if (!response.ok) {
-                    throw new Error('Failed to load applications');
-                }
-
-                if (applications.length === 0) {
-                    appsTable.style.display = 'none';
-                    noAppsMessage.style.display = 'block';
-                    applicationsTableBody.innerHTML = "";
-                    return;
-                }
-                
-                appsTable.style.display = '';
-                noAppsMessage.style.display = 'none';
-
-                applicationsTableBody.innerHTML = applications.map(app => `
-                    <tr>
-                        <td><strong>${sanitizeHTML(app.full_name || "Unnamed Candidate")}</strong><br><small>${sanitizeHTML(app.email || "")}</small></td>
-                        <td>${sanitizeHTML(app.job_title || "")}</td>
-                        <td><span class="status-${app.status}">${sanitizeHTML(app.status || "")}</span></td>
-                        <td class="actions">
-                            <button onclick="updateApplicationStatus(${app.application_id}, 'accepted')">Accept</button>
-                            <button onclick="updateApplicationStatus(${app.application_id}, 'rejected')">Reject</button>
-                        </td>
-                    </tr>
-                `).join("");
-            } catch (error) {
-                console.error('Error loading applications:', error);
-                document.getElementById("applicationsTableBody").innerHTML = `<tr><td colspan="4">An unexpected error occurred while loading applications.</td></tr>`;
-            }
-        }
-
-        async function updateApplicationStatus(applicationId, status) {
-            try {
-                if (!confirm(`Are you sure you want to mark this application as '${status}'?`)) {
-                    return;
-                }
-
-                const response = await fetch(`/api/jobs/applications/${applicationId}/status`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify({ status })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
                     alert(data.message);
+                    loadMyJobs();
                     loadApplications();
                 } else {
-                    alert(data.error);
+                    alert(data.error || "Failed to delete job.");
                 }
+
             } catch (error) {
-                console.error('Error updating application status:', error);
-                alert('An unexpected error occurred while updating status.');
+                console.error("Delete job error:", error);
+                alert("Unable to delete job. Check backend console.");
+            }
+        }
+
+        async function loadApplications() {
+            const response = await fetch("/api/jobs/applications", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const applications = await response.json();
+            const applicationsList = document.getElementById("applicationsList");
+
+            if (!response.ok) {
+                applicationsList.innerHTML = "<p>Unable to load applications.</p>";
+                return;
+            }
+
+            if (applications.length === 0) {
+                applicationsList.innerHTML = "<p>No applications yet.</p>";
+                return;
+            }
+
+            applicationsList.innerHTML = applications.map(app => `
+                <div class="application-card">
+                    <h3>${app.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Applied For:</strong> ${app.job_title || ""}</p>
+                    <p><strong>Status:</strong> <span class="status-${app.status}">${app.status || ""}</span></p>
+                    <p><strong>Email:</strong> ${app.email || ""}</p>
+                    <p><strong>Contact:</strong> ${app.contact || ""}</p>
+                    <p><strong>Education:</strong> ${app.education || ""}</p>
+                    <p><strong>Major:</strong> ${app.major || ""}</p>
+                    <p><strong>Experience:</strong> ${app.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${app.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${app.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${app.preferred_location || ""}</p>
+
+                    <button onclick="updateApplicationStatus(${app.application_id}, 'accepted')">Accept</button>
+                    <button onclick="updateApplicationStatus(${app.application_id}, 'rejected')">Reject</button>
+                </div>
+            `).join("");
+        }
+
+        async function updateApplicationStatus(applicationId, status) {
+            const response = await fetch(`/api/jobs/applications/${applicationId}/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ status })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                loadApplications();
+            } else {
+                alert(data.error);
             }
         }
 
@@ -742,92 +569,82 @@
             if (workMode) queryParams.append("work_mode", workMode);
             if (minExperience) queryParams.append("min_experience", minExperience);
 
-            try {
-                const response = await fetch("/api/candidates?" + queryParams.toString(), {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                });
-
-                const candidates = await response.json();
-                document.getElementById("totalCandidates").textContent = candidates.length;
-                const candidatesList = document.getElementById("candidatesList");
-
-                if (!response.ok) {
-                    candidatesList.innerHTML = "<p>Unable to load candidates.</p>";
-                    return;
+            const response = await fetch("/api/candidates?" + queryParams.toString(), {
+                headers: {
+                    "Authorization": "Bearer " + token
                 }
+            });
 
-                if (candidates.length === 0) {
-                    candidatesList.innerHTML = "<p>No matching candidates found.</p>";
-                    return;
-                }
+            const candidates = await response.json();
+            document.getElementById("totalCandidates").textContent = candidates.length;
+            const candidatesList = document.getElementById("candidatesList");
 
-                candidatesList.innerHTML = candidates.map(candidate => `
-                    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                        <h3>${sanitizeHTML(candidate.full_name || "Unnamed Candidate")}</h3>
-                        <p><strong>Email:</strong> ${sanitizeHTML(candidate.email || "")}</p>
-                        <p><strong>Contact:</strong> ${sanitizeHTML(candidate.contact || "")}</p>
-                        <p><strong>Education:</strong> ${sanitizeHTML(candidate.education || "")}</p>
-                        <p><strong>Major:</strong> ${sanitizeHTML(candidate.major || "")}</p>
-                        <p><strong>Experience:</strong> ${sanitizeHTML(candidate.years_experience || 0)} years</p>
-                        <p><strong>Skills:</strong> ${sanitizeHTML(candidate.skills || "")}</p>
-                        <p><strong>Preferred Work Mode:</strong> ${sanitizeHTML(candidate.preferred_work_mode || "")}</p>
-                        <p><strong>Preferred Location:</strong> ${sanitizeHTML(candidate.preferred_location || "")}</p>
-                    </div>
-                `).join("");
-            } catch (error) {
-                console.error('Error loading candidates:', error);
-                document.getElementById("candidatesList").innerHTML = "<p>An unexpected error occurred while loading candidates.</p>";
+            if (!response.ok) {
+                candidatesList.innerHTML = "<p>Unable to load candidates.</p>";
+                return;
             }
+
+            if (candidates.length === 0) {
+                candidatesList.innerHTML = "<p>No matching candidates found.</p>";
+                return;
+            }
+
+            candidatesList.innerHTML = candidates.map(candidate => `
+                <div class="candidate-card">
+                    <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Email:</strong> ${candidate.email || ""}</p>
+                    <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
+                    <p><strong>Education:</strong> ${candidate.education || ""}</p>
+                    <p><strong>Major:</strong> ${candidate.major || ""}</p>
+                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
+                </div>
+            `).join("");
         }
 
         async function loadRecommendedCandidates() {
             const jobId = document.getElementById("recommendationJobSelect").value;
             const list = document.getElementById("recommendedCandidatesList");
 
-            try {
-                if (!jobId) {
-                    list.innerHTML = "<p>Please create or select a job first.</p>";
-                    return;
-                }
-
-                const response = await fetch("/api/recommendations/candidates/" + jobId, {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                });
-
-                const candidates = await response.json();
-
-                if (!response.ok) {
-                    list.innerHTML = "<p>Unable to load recommended candidates.</p>";
-                    return;
-                }
-
-                if (candidates.length === 0) {
-                    list.innerHTML = "<p>No recommended candidates found.</p>";
-                    return;
-                }
-
-                list.innerHTML = candidates.map(candidate => `
-                    <div class="card">
-                        <h3>${sanitizeHTML(candidate.full_name || "Unnamed Candidate")}</h3>
-                        <p><strong>Match Score:</strong> ${sanitizeHTML(candidate.match_score)}</p>
-                        <p><strong>Email:</strong> ${sanitizeHTML(candidate.email || "")}</p>
-                        <p><strong>Contact:</strong> ${sanitizeHTML(candidate.contact || "")}</p>
-                        <p><strong>Education:</strong> ${sanitizeHTML(candidate.education || "")}</p>
-                        <p><strong>Major:</strong> ${sanitizeHTML(candidate.major || "")}</p>
-                        <p><strong>Experience:</strong> ${sanitizeHTML(candidate.years_experience || 0)} years</p>
-                        <p><strong>Skills:</strong> ${sanitizeHTML(candidate.skills || "")}</p>
-                        <p><strong>Preferred Work Mode:</strong> ${sanitizeHTML(candidate.preferred_work_mode || "")}</p>
-                        <p><strong>Preferred Location:</strong> ${sanitizeHTML(candidate.preferred_location || "")}</p>
-                    </div>
-                `).join("");
-            } catch (error) {
-                console.error('Error loading recommended candidates:', error);
-                list.innerHTML = "<p>An unexpected error occurred while loading recommendations.</p>";
+            if (!jobId) {
+                list.innerHTML = "<p>Please create or select a job first.</p>";
+                return;
             }
+
+            const response = await fetch("/api/recommendations/candidates/" + jobId, {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const candidates = await response.json();
+
+            if (!response.ok) {
+                list.innerHTML = "<p>Unable to load recommended candidates.</p>";
+                return;
+            }
+
+            if (candidates.length === 0) {
+                list.innerHTML = "<p>No recommended candidates found.</p>";
+                return;
+            }
+
+            list.innerHTML = candidates.map(candidate => `
+                <div class="candidate-card">
+                    <h3>${candidate.full_name || "Unnamed Candidate"}</h3>
+                    <p><strong>Match Score:</strong> ${candidate.match_score}</p>
+                    <p><strong>Email:</strong> ${candidate.email || ""}</p>
+                    <p><strong>Contact:</strong> ${candidate.contact || ""}</p>
+                    <p><strong>Education:</strong> ${candidate.education || ""}</p>
+                    <p><strong>Major:</strong> ${candidate.major || ""}</p>
+                    <p><strong>Experience:</strong> ${candidate.years_experience || 0} years</p>
+                    <p><strong>Skills:</strong> ${candidate.skills || ""}</p>
+                    <p><strong>Preferred Work Mode:</strong> ${candidate.preferred_work_mode || ""}</p>
+                    <p><strong>Preferred Location:</strong> ${candidate.preferred_location || ""}</p>
+                </div>
+            `).join("");
         }
 
         function clearCandidateSearch() {
@@ -845,14 +662,6 @@
             localStorage.removeItem("user");
             window.location.href = "login.html";
         }
-
-        loadEmployerProfile();
-        loadMyJobs();
-        loadCandidates();
-        loadApplications();
-
-        // Show the first section by default
-        showSection('company');
     </script>
 </body>
 </html>
