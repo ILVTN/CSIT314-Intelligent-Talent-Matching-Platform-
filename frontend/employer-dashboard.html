@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
+    <script src="js/popupAlert.js"></script>
 </head>
 
 <body>
@@ -211,8 +212,19 @@
                 <button onclick="upgradeMembership()" id="upgradeBtn">Upgrade to Member</button>
                 <p id="membershipMessage"></p>
             </div>
-
         </main> 
+
+        <div id="popupOverlay" class="popup-overlay">
+            <div class="popup-box">
+                <h3 id="popupTitle">Message</h3>
+                <p id="popupMessage"></p>
+
+                <div class="popup-actions">
+                    <button id="popupConfirmBtn">Confirm</button>
+                    <button id="popupCancelBtn" onclick="closePopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -227,7 +239,6 @@
             updateMembershipUI();
             loadEmployerProfile();
             loadMyJobs();
-            loadCandidates();
             loadApplications();
         }
 
@@ -364,12 +375,19 @@
             if (jobs.length === 0) {
                 jobsList.innerHTML = "<p>No jobs created yet.</p>";
                 recommendationJobSelect.innerHTML = "";
+
+                document.getElementById("totalCandidates").textContent = 0;
+                document.getElementById("candidatesList").innerHTML = "<p>Please create at least one job posting before viewing candidates.</p>";
+                document.getElementById("recommendedCandidatesList").innerHTML = "<p>Please create at least one job posting before viewing recommended candidates.</p>";
+
                 return;
             }
 
             recommendationJobSelect.innerHTML = jobs.map(job => `
                 <option value="${job.id}">${job.job_title}</option>
             `).join("");
+            
+            loadCandidates();
 
             jobsList.innerHTML = jobs.map(job => `
                 <div class="job-card">
@@ -462,32 +480,34 @@
         });
 
         async function deleteJob(jobId) {
-            if (!confirm("Are you sure you want to delete this job? This will also delete related applications.")) {
-                return;
-            }
+            showPopup(
+                "Confirm Delete",
+                "Are you sure you want to delete this job? This will also delete related applications.",
+                async function() {
+                    try {
+                        const response = await fetch(`/api/jobs/${jobId}`, {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            }
+                        });
 
-            try {
-                const response = await fetch(`/api/jobs/${jobId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": "Bearer " + token
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showPopup("Success", data.message, null, false);
+                            loadMyJobs();
+                            loadApplications();
+                        } else {
+                            showPopup("Error", data.error || "Failed to delete job.", null, false);
+                        }
+
+                    } catch (error) {
+                        console.error("Delete job error:", error);
+                        showPopup("Error", "Unable to delete job. Check backend console.", null, false);
                     }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert(data.message);
-                    loadMyJobs();
-                    loadApplications();
-                } else {
-                    alert(data.error || "Failed to delete job.");
                 }
-
-            } catch (error) {
-                console.error("Delete job error:", error);
-                alert("Unable to delete job. Check backend console.");
-            }
+            );
         }
 
         async function loadApplications() {
@@ -495,10 +515,10 @@
                 headers: {
                     "Authorization": "Bearer " + token
                 }
-            });
+            }); 
 
             const applications = await response.json();
-            const applicationsList = document.getElementById("applicationsList");
+            const updateApplicationStatus = document.getElementById("applicationsList");
 
             if (!response.ok) {
                 applicationsList.innerHTML = "<p>Unable to load applications.</p>";
@@ -531,27 +551,44 @@
             `).join("");
         }
 
-        async function updateApplicationStatus(applicationId, status) {
-            const response = await fetch(`/api/jobs/applications/${applicationId}/status`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({ status })
-            });
+        function updateApplicationStatus(applicationId, status) {
+            const actionText = status === "accepted" ? "accept" : "reject";
 
-            const data = await response.json();
+            showPopup(
+                "Confirm Application Status",
+                `Are you sure you want to ${actionText} this application?`,
+                async function() {
+                    const response = await fetch(`/api/jobs/applications/${applicationId}/status`, {  
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+                        body: JSON.stringify({ status })
+                    });
 
-            if (response.ok) {
-                alert(data.message);
-                loadApplications();
-            } else {
-                alert(data.error);
-            }
+                    const data = await response.json();
+
+                    if (response.ok) {  
+                        showPopup("Success", data.message, null, false);
+                        loadApplications();
+                    } else {
+                        showPopup("Error", data.error || "Failed to update application status.", null, false);
+                    }
+                }
+            );
         }
 
         async function loadCandidates() {
+            const recommendationJobSelect = document.getElementById("recommendationJobSelect");
+
+            if (!recommendationJobSelect.value) {
+                document.getElementById("totalCandidates").textContent = 0;
+                document.getElementById("candidatesList").innerHTML =
+                    "<p>Please create at least one job posting before searching candidates.</p>";
+                return;
+            }
+
             const keyword = document.getElementById("candidateKeyword").value;
             const education = document.getElementById("candidateEducation").value;
             const location = document.getElementById("candidateLocation").value;

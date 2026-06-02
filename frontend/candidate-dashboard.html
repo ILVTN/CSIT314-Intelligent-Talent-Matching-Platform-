@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
+    <script src="js/popupAlert.js"></script>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -21,125 +22,136 @@
         </aside>
 
         <main class="dashboard-content">
-        <div class="dashboard-header">
-            <h1>Candidate Dashboard</h1>
-            <p id="welcomeMessage">Welcome, candidate.</p>
-        </div>
-
-        <div class="stats-grid">
-            <button class="stat-card stat-button" onclick="window.location.href='#browse'">
-                <h3 id="totalJobs">0</h3>
-                <p>Available Jobs</p>
-            </button>
-
-            <button class="stat-card stat-button" onclick="window.location.href='#recommended'">
-                <h3 id="totalRecommendedJobs">0</h3>
-                <p>Recommended Jobs</p>
-            </button>
-
-            <button class="stat-card stat-button" onclick="window.location.href='#membership'">
-                <h3 id="candidateMembership">Free</h3>
-                <p>Membership</p>
-            </button>
-        </div>
-
-        <div class="card" id="profile">
-            <h2>My Profile</h2>
-
-            <form id="profileForm">
-                <label>Full Name:</label><br>
-                <input type="text" id="full_name"><br><br>
-
-                <label>Contact:</label><br>
-                <input type="text" id="contact"><br><br>
-
-                <label>Education:</label><br>
-                <input type="text" id="education" placeholder="Bachelor, Master, Diploma"><br><br>
-
-                <label>Major:</label><br>
-                <input type="text" id="major" placeholder="Computer Science, Business"><br><br>
-
-                <label>Years of Experience:</label><br>
-                <input type="number" id="years_experience"><br><br>
-
-                <label>Work Experience:</label><br>
-                <textarea id="work_experience" placeholder="Describe your previous jobs, internships, projects"></textarea><br><br>
-                
-                <label>Skills:</label><br>
-                <textarea id="skills"></textarea><br><br>
-
-                <label>Preferred Work Mode:</label><br>
-                <select id="preferred_work_mode">
-                    <option value="">Select work mode</option>
-                    <option value="Remote">Remote</option>
-                    <option value="On-site">On-site</option>
-                    <option value="Hybrid">Hybrid</option>
-                </select><br><br>
-
-                <label>Preferred Location:</label><br>
-                <input type="text" id="preferred_location" placeholder="Sydney, Melbourne"><br><br>
-
-                <button type="submit">Save Profile</button>
-            </form>
-
-            <p id="message"></p>
-        </div>
-
-        <div class="card" id="recommended">
-            <h2>Recommended Jobs</h2>
-            <button onclick="loadRecommendedJobs()">Load Recommended Jobs</button>
-            <br><br>
-            <div id="recommendedJobsList"></div>
-        </div>
-
-        <div class="card" id="browse">
-            <h2>Browse Jobs</h2>
-
-            <div>
-                <h3>Search and Filter Jobs</h3>
-
-                <label>Keyword:</label><br>
-                <input type="text" id="searchKeyword" placeholder="JavaScript, developer, SQL"><br><br>
-
-                <label>Location:</label><br>
-                <input type="text" id="searchLocation" placeholder="Sydney"><br><br>
-
-                <label>Work Mode:</label><br>
-                <select id="searchWorkMode">
-                    <option value="">Any</option>
-                    <option value="Remote">Remote</option>
-                    <option value="On-site">On-site</option>
-                    <option value="Hybrid">Hybrid</option>
-                </select><br><br>
-
-                <label>Education:</label><br>
-                <input type="text" id="searchEducation" placeholder="Bachelor"><br><br>
-
-                <label>Maximum Required Experience:</label><br>
-                <input type="number" id="searchExperience" placeholder="2"><br><br>
-
-                <button onclick="loadJobs()">Search</button>
-                <button onclick="clearSearch()">Clear</button>
+            <div class="dashboard-header">
+                <h1>Candidate Dashboard</h1>
+                <p id="welcomeMessage">Welcome, candidate.</p>
             </div>
 
-            <div id="jobsList"></div>
-        </div>
+            <div class="stats-grid">
+                <button class="stat-card stat-button" onclick="window.location.href='#browse'">
+                    <h3 id="totalJobs">0</h3>
+                    <p>Available Jobs</p>
+                </button>
 
-        <div class="card" id="applications">
-            <h2>My Applications</h2>
-            <button onclick="loadMyApplications()">Refresh Applications</button>
-            <br><br>
-            <div id="myApplicationsList"></div>
-        </div>
+                <button class="stat-card stat-button" onclick="window.location.href='#recommended'">
+                    <h3 id="totalRecommendedJobs">0</h3>
+                    <p>Recommended Jobs</p>
+                </button>
 
-        <div class="card" id="membership">
-            <h2>Membership</h2>
-            <p>Current Membership: <strong id="membershipStatus"></strong></p>
-            <button onclick="upgradeMembership()" id="upgradeBtn">Upgrade to Member</button>
-            <p id="membershipMessage"></p>
-        </div>
+                <button class="stat-card stat-button" onclick="window.location.href='#membership'">
+                    <h3 id="candidateMembership">Free</h3>
+                    <p>Membership</p>
+                </button>
+            </div>
 
+            <div class="card" id="profile">
+                <h2>My Profile</h2>
+
+                <form id="profileForm">
+                    <label>Full Name:</label><br>
+                    <input type="text" id="full_name"><br><br>
+
+                    <label>Contact:</label><br>
+                    <input type="text" id="contact"><br><br>
+
+                    <label>Education:</label><br>
+                    <input type="text" id="education" placeholder="Bachelor, Master, Diploma"><br><br>
+
+                    <label>Major:</label><br>
+                    <input type="text" id="major" placeholder="Computer Science, Business"><br><br>
+
+                    <label>Years of Experience:</label><br>
+                    <input type="number" id="years_experience"><br><br>
+
+                    <label>Work Experience:</label><br>
+                    <textarea id="work_experience" placeholder="Describe your previous jobs, internships, projects"></textarea><br><br>
+                    
+                    <label>Skills:</label><br>
+                    <textarea id="skills"></textarea><br><br>
+
+                    <label>Preferred Work Mode:</label><br>
+                    <select id="preferred_work_mode">
+                        <option value="">Select work mode</option>
+                        <option value="Remote">Remote</option>
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select><br><br>
+
+                    <label>Preferred Location:</label><br>
+                    <input type="text" id="preferred_location" placeholder="Sydney, Melbourne"><br><br>
+
+                    <button type="submit">Save Profile</button>
+                </form>
+
+                <p id="message"></p>
+            </div>
+
+            <div class="card" id="recommended">
+                <h2>Recommended Jobs</h2>
+                <button onclick="loadRecommendedJobs()">Load Recommended Jobs</button>
+                <br><br>
+                <div id="recommendedJobsList"></div>
+            </div>
+
+            <div class="card" id="browse">
+                <h2>Browse Jobs</h2>
+
+                <div>
+                    <h3>Search and Filter Jobs</h3>
+
+                    <label>Keyword:</label><br>
+                    <input type="text" id="searchKeyword" placeholder="JavaScript, developer, SQL"><br><br>
+
+                    <label>Location:</label><br>
+                    <input type="text" id="searchLocation" placeholder="Sydney"><br><br>
+
+                    <label>Work Mode:</label><br>
+                    <select id="searchWorkMode">
+                        <option value="">Any</option>
+                        <option value="Remote">Remote</option>
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select><br><br>
+
+                    <label>Education:</label><br>
+                    <input type="text" id="searchEducation" placeholder="Bachelor"><br><br>
+
+                    <label>Maximum Required Experience:</label><br>
+                    <input type="number" id="searchExperience" placeholder="2"><br><br>
+
+                    <button onclick="loadJobs()">Search</button>
+                    <button onclick="clearSearch()">Clear</button>
+                </div>
+
+                <div id="jobsList"></div>
+            </div>
+
+            <div class="card" id="applications">
+                <h2>My Applications</h2>
+                <button onclick="loadMyApplications()">Refresh Applications</button>
+                <br><br>
+                <div id="myApplicationsList"></div>
+            </div>
+
+            <div class="card" id="membership">
+                <h2>Membership</h2>
+                <p>Current Membership: <strong id="membershipStatus"></strong></p>
+                <button onclick="upgradeMembership()" id="upgradeBtn">Upgrade to Member</button>
+                <p id="membershipMessage"></p>
+            </div>
         </main>
+
+        <div id="popupOverlay" class="popup-overlay">
+            <div class="popup-box">
+                <h3 id="popupTitle">Message</h3>
+                <p id="popupMessage"></p>
+
+                <div class="popup-actions">
+                    <button id="popupConfirmBtn">Confirm</button>
+                    <button id="popupCancelBtn" onclick="closePopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -333,23 +345,29 @@
         }
 
         async function applyJob(jobId) {
-            const response = await fetch(`/api/jobs/${jobId}/apply`, {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer " + token
+            showPopup(
+                "Confirm Application",  
+                "Are you sure you want to apply for this job?", 
+                async function() {
+                    const response = await fetch(`/api/jobs/${jobId}/apply`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showPopup("Success", data.message, null, false);  
+                        loadJobs();
+                        loadRecommendedJobs();
+                        loadMyApplications();
+                    } else {
+                        showPopup("Error", data.error, null, false);
+                    }
                 }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert(data.message);
-                loadJobs();
-                loadRecommendedJobs();
-                loadMyApplications();
-            } else {
-                alert(data.error);
-            }
+            );
         }
 
         async function loadMyApplications() {
