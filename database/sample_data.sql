@@ -7,7 +7,8 @@ INSERT INTO users (email, password, role, membership)
 VALUES
 ('candidate@test.com', '$2b$10$GEjWK2df.E8wdxLp6rw/I.mssFd99.PGMe5mgyMNlIHuKTG9xu7Hq', 'candidate', 'free'),
 ('candidate2@test.com', '$2b$10$GEjWK2df.E8wdxLp6rw/I.mssFd99.PGMe5mgyMNlIHuKTG9xu7Hq', 'candidate', 'free'),
-('employer@test.com', '$2b$10$GEjWK2df.E8wdxLp6rw/I.mssFd99.PGMe5mgyMNlIHuKTG9xu7Hq', 'employer', 'member');
+('employer@test.com', '$2b$10$GEjWK2df.E8wdxLp6rw/I.mssFd99.PGMe5mgyMNlIHuKTG9xu7Hq', 'employer', 'member'),
+('terry@email.com', '$2b$10$GEjWK2df.E8wdxLp6rw/I.mssFd99.PGMe5mgyMNlIHuKTG9xu7Hq', 'candidate', 'free');
 
 INSERT INTO candidates (
     user_id,
@@ -42,6 +43,17 @@ VALUES
     'Python, Data Analysis, Machine Learning',
     'Remote',
     'Melbourne'
+),
+(
+    4,
+    'Typo Terry',
+    'terry@email.com',
+    'Bachelor',
+    'Sofware Enginering',
+    1,
+    'Javascrit, Nodejs, SQL',
+    'Remote',
+    'Sydney'
 );
 
 INSERT INTO employers (
