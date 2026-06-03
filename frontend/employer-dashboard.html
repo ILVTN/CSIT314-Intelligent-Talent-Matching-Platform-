@@ -8,9 +8,9 @@
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
     <style>
-        /* --- INDUSTRY STANDARD UI UPGRADES --- */
+        /* My custom styles for a better UI */
         
-        /* Toast Notifications */
+        /* For pop-up messages (like 'Profile Saved!') */
         #toast-container {
             position: fixed; top: 20px; right: 20px; z-index: 10000;
             display: flex; flex-direction: column; gap: 10px;
@@ -27,7 +27,7 @@
         .toast-error { background: #EF4444; }   
         .toast-info { background: #3B82F6; }    
 
-        /* Loading Spinner */
+        /* Simple loading spinner for when data is being fetched */
         .loader {
             border: 3px solid #f3f3f3; border-top: 3px solid #2563eb;
             border-radius: 50%; width: 30px; height: 30px;
@@ -35,7 +35,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Status Badges */
+        /* Coloured badges for application status */
         .badge {
             padding: 4px 10px; border-radius: 9999px; font-size: 0.8em; font-weight: 600;
             text-transform: uppercase; letter-spacing: 0.05em; display: inline-block;
@@ -44,13 +44,13 @@
         .badge-rejected { background: #FEE2E2; color: #991B1B; }
         .badge-submitted { background: #DBEAFE; color: #1E40AF; }
 
-        /* Empty States */
+        /* A message to show when a list is empty (e.g., no jobs found) */
         .empty-state {
             text-align: center; padding: 40px 20px; color: #6B7280;
             background: #F9FAFB; border-radius: 8px; border: 1px dashed #D1D5DB;
         }
         
-        /* Modals */
+        /* Styles for all the pop-up forms (modals) */
         .modal-overlay {
             display: none; position: fixed; inset: 0; z-index: 9999;
             background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
@@ -67,7 +67,7 @@
         }
         .modal-close:hover { color: #0f172a; }
 
-        /* Form Inputs */
+        /* A grid layout for the search filter area */
         .search-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;
             margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
@@ -331,10 +331,10 @@
     <script>
         protectPage("employer");
 
-        // Global State for fast frontend manipulation
+        // Store jobs list globally to avoid re-fetching for the edit modal
         let currentJobsList = [];
 
-        // --- UTILITIES ---
+        // --- Helper Functions ---
         const escapeHTML = (str) => {
             if (!str) return "";
             return str.toString().replace(/[&<>'"]/g, tag => ({
@@ -342,6 +342,7 @@
             }[tag]));
         };
 
+        // My function to show a small pop-up message on the screen
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -355,7 +356,7 @@
             }, 4000);
         }
 
-        // --- NAVIGATION LOGIC ---
+        // --- Page Section Navigation ---
         function showSection() {
             let hash = window.location.hash || "#company";
             document.querySelectorAll("main > .card").forEach(c => c.style.display = "none");
@@ -373,7 +374,7 @@
         window.addEventListener("DOMContentLoaded", showSection);
         window.addEventListener("hashchange", showSection);
 
-        // --- MODAL CONTROLLERS ---
+        // --- Modal Pop-up Controls ---
         function openProfileModal() { document.getElementById("profileModal").style.display = "flex"; }
         function closeProfileModal() { document.getElementById("profileModal").style.display = "none"; }
         
@@ -383,7 +384,7 @@
         function closeEditModal() { document.getElementById('editJobModal').style.display = 'none'; }
 
 
-        // --- INITIALIZATION ---
+        // --- Page Load & Setup ---
         const token = localStorage.getItem("token");
         const user = getLoggedInUser();
 
@@ -397,6 +398,7 @@
             loadApplications();
         }
 
+        // This function updates the UI based on the user's membership status
         function updateMembershipUI(tier) {
             document.getElementById("membershipStatusDisplay").textContent = tier;
             document.getElementById("employerMembership").textContent = tier;
@@ -435,24 +437,24 @@
             } catch (err) { showToast("Network error.", "error"); }
         }
 
-        // --- COMPANY PROFILE ---
+        // --- Company Profile Functions ---
         async function loadEmployerProfile() {
             try {
                 const response = await fetch("/api/employers/profile", { headers: { "Authorization": "Bearer " + token }});
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Update Landing Page Text
+                    // Update the main dashboard text with the profile info
                     document.getElementById("displayCompanyName").textContent = data.company_name || "Welcome to TalentMatch!";
                     document.getElementById("displayCompanyInfo").textContent = data.company_info || "Click 'Edit Profile' to set up your company details.";
                     document.getElementById("displayCompanyContact").textContent = data.contact || "No contact info provided.";
 
-                    // Pre-fill hidden modal inputs
+                    // Put the current profile data into the edit modal form
                     document.getElementById("input_company_name").value = data.company_name || "";
                     document.getElementById("input_company_info").value = data.company_info || "";
                     document.getElementById("input_contact").value = data.contact || "";
 
-                    // If they haven't set a name yet, force open the profile setup
+                    // If they haven't set a name yet, force open the profile setup modal
                     if (!data.company_name) {
                         openProfileModal();
                     }
@@ -484,7 +486,7 @@
             }
         });
 
-        // --- JOBS MANAGEMENT ---
+        // --- Job Posting Functions ---
         document.getElementById("jobForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const jobData = {
@@ -523,8 +525,9 @@
                 const response = await fetch("/api/jobs/my-jobs", { headers: { "Authorization": "Bearer " + token }});
                 const jobs = await response.json();
                 
-                // Store globally so the Edit button can access it instantly without fetching again
-                currentJobsList = jobs; 
+                // Store the fetched jobs in a global array. This is so the 'edit' button
+                // can open the modal instantly without another API call.
+                currentJobsList = jobs;
 
                 document.getElementById("totalMyJobs").textContent = jobs.length || 0;
                 const recommendationSelect = document.getElementById("recommendationJobSelect");
@@ -559,10 +562,10 @@
             } catch (err) { jobsList.innerHTML = '<div class="empty-state">Error loading jobs.</div>'; }
         }
 
-        // --- FIXED EDIT MODAL LOGIC (Instant State Load) ---
+        // --- Edit/Delete Job Logic ---
         function openEditModal(jobId) {
-            // Find the job instantly from our stored array
-            const job = currentJobsList.find(j => j.id === jobId);
+            // Get the job details from the `currentJobsList` array I stored earlier
+            const job = currentJobsList.find(j => j.id === jobId); 
             
             if (job) {
                 document.getElementById('edit_job_id').value = job.id;
@@ -574,7 +577,7 @@
                 document.getElementById('edit_work_mode').value = job.work_mode || '';
                 document.getElementById('edit_job_location').value = job.job_location || '';
                 
-                // Show modal as flex so it centers properly
+                // Show the modal (using flex to keep it centered)
                 document.getElementById('editJobModal').style.display = 'flex';
             } else {
                 showToast("Error finding job details in memory.", "error");
@@ -626,7 +629,7 @@
             } catch (err) { showToast("Error deleting job.", "error"); }
         }
 
-        // --- APPLICATIONS ---
+        // --- Application Management ---
         function getStatusBadge(status) {
             const s = status ? status.toLowerCase() : 'submitted';
             if(s === 'accepted') return `<span class="badge badge-accepted">Accepted</span>`;
@@ -684,7 +687,7 @@
             }
         }
 
-        // --- WEEK 8: ADVANCED FUZZY SEARCH (WITH DEBOUNCE) ---
+        // --- Candidate Search (with Debounce for performance) ---
         let searchTimeout;
 
         document.querySelectorAll('.search-grid input, .search-grid select').forEach(input => {
@@ -694,6 +697,7 @@
             });
         });
 
+        // This function searches for candidates based on the filter inputs
         async function loadCandidates() {
             const list = document.getElementById("candidatesList");
             list.innerHTML = '<div class="loader"></div>';
@@ -733,7 +737,7 @@
             } catch (err) { list.innerHTML = '<div class="empty-state">Error searching database.</div>'; }
         }
 
-        // --- RECOMMENDATIONS ---
+        // --- AI Recommendation Functions ---
         async function loadRecommendedCandidates() {
             const jobId = document.getElementById("recommendationJobSelect").value;
             const list = document.getElementById("recommendedCandidatesList");
