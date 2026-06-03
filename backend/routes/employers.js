@@ -1,17 +1,20 @@
 const express = require("express");
 const pool = require("../db");
 const authMiddleware = require("../middleware/authMiddleware");
-const Fuse = require("fuse.js"); // Added for Week 8 Fuzzy Search
+const Fuse = require("fuse.js"); // I'm using Fuse.js for the fuzzy search feature
 
 const router = express.Router();
 
-// GET a company profile
+// My endpoint to get the employer's company profile.
+// It uses the auth middleware to make sure the user is logged in.
 router.get("/profile", authMiddleware, async (req, res) => {
     try {
+        // I check the user's role here to make sure only employers can access this.
         if (req.user.role !== "employer") {
             return res.status(403).json({ error: "Forbidden" });
         }
 
+        // Find the employer profile using the user_id from the JWT token.
         const [rows] = await pool.query(
             "SELECT company_name, company_info, contact FROM employers WHERE user_id = ?",
             [req.user.id]
@@ -19,6 +22,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
 
         if (rows.length === 0) {
             console.warn(`[WARN] No employer profile found for user_id: ${req.user.id}`);
+            // This happens when a new employer signs up but hasn't saved their profile yet.
             return res.status(404).json({ error: "Employer profile not found." });
         }
 
@@ -31,7 +35,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
     }
 });
 
-// UPDATE a company profile
+// My endpoint to let an employer update their company profile.
 router.put("/profile", authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== "employer") {
@@ -40,6 +44,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
         const { company_name, company_info, contact } = req.body;
 
+        // Update the employer's details in the database.
         const [result] = await pool.query(
             "UPDATE employers SET company_name = ?, company_info = ?, contact = ? WHERE user_id = ?",
             [company_name, company_info, contact, req.user.id]
@@ -58,7 +63,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
     }
 });
 
-// WEEK 8 REQUIREMENT: Advanced Search & Filter with Fuzzy Matching
+// This is my advanced search for candidates, which was a Week 8 requirement.
 router.get("/search-candidates", authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== "employer") {
@@ -67,7 +72,8 @@ router.get("/search-candidates", authMiddleware, async (req, res) => {
 
         const { keyword, education, location, work_mode, min_experience } = req.query;
 
-        // 1. Build dynamic SQL for hard filters (Location, Work Mode, Education, Experience)
+        // Step 1: I build a dynamic SQL query to filter candidates based on the form inputs.
+        // I start with `WHERE 1=1` so I can easily add more `AND` conditions.
         let query = `
             SELECT candidates.*, users.email 
             FROM candidates 
@@ -95,11 +101,12 @@ router.get("/search-candidates", authMiddleware, async (req, res) => {
 
         const [candidates] = await pool.query(query, queryParams);
 
-        // 2. If there is a Keyword, apply Fuse.js Fuzzy Search to the filtered results
+        // Step 2: After getting the filtered list from the database, if there's a keyword,
+        // I use Fuse.js to do a fuzzy search on those results.
         if (keyword && candidates.length > 0) {
             const fuseOptions = {
                 keys: ['full_name', 'skills', 'major', 'work_experience'],
-                threshold: 0.4, // 0.4 allows for typos (e.g., "sofware" matches "software")
+                threshold: 0.4, // The threshold of 0.4 is a good balance, it can find "sofware" if someone searches for "software".
                 ignoreLocation: true,
                 minMatchCharLength: 2
             };
@@ -107,12 +114,12 @@ router.get("/search-candidates", authMiddleware, async (req, res) => {
             const fuse = new Fuse(candidates, fuseOptions);
             const fuzzyResults = fuse.search(keyword);
             
-            // Fuse returns an array of objects structured as { item: { ...data } }
+            // Fuse.js wraps the results in an 'item' object, so I need to map over it to get my original candidate data back.
             const finalResults = fuzzyResults.map(result => result.item);
             return res.json(finalResults);
         }
 
-        // 3. If no keyword, return the results matched purely by SQL filters
+        // Step 3: If the user didn't type a keyword, I just return the results from the SQL query directly.
         res.json(candidates);
 
     } catch (error) {
