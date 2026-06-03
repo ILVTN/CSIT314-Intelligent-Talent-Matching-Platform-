@@ -155,12 +155,17 @@ router.get("/candidates/:jobId", authMiddleware, async (req, res) => {
 
         const recommendations = candidates.map(candidate => {
             let score = 0;
+            const reasons = []; // Store human-readable match explanations
 
             const skillMatches = countSkillMatches(candidate.skills, job.required_skills);
-            score += skillMatches * 3;
+            if (skillMatches > 0) {
+                score += skillMatches * 3;
+                reasons.push(`🛠️ ${skillMatches} Matching Skill(s)`);
+            }
 
             if (textIncludes(candidate.education, job.required_education)) {
                 score += 2;
+                reasons.push(`🎓 Education Aligned`);
             }
 
             if (
@@ -169,6 +174,7 @@ router.get("/candidates/:jobId", authMiddleware, async (req, res) => {
                 Number(candidate.years_experience) >= Number(job.years_experience)
             ) {
                 score += 2;
+                reasons.push(`⏳ Experience Matched`);
             }
 
             if (
@@ -177,15 +183,18 @@ router.get("/candidates/:jobId", authMiddleware, async (req, res) => {
                 candidate.preferred_work_mode === job.work_mode
             ) {
                 score += 1;
+                reasons.push(`💻 Work Mode Match (${job.work_mode})`);
             }
 
             if (textIncludes(candidate.preferred_location, job.job_location)) {
                 score += 1;
+                reasons.push(`📍 Preferred Location Match`);
             }
 
             return {
                 ...candidate,
-                match_score: score
+                match_score: score,
+                match_reasons: reasons // Send explanations array to frontend
             };
         });
 
