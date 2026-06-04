@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
+    <script src="js/popupAlert.js"></script>
     <style>
         /* My custom styles for a better UI */
         
@@ -95,7 +96,7 @@
             <div class="dashboard-header">
                 <div>
                     <h1>Employer Portal</h1>
-                    <p style="color: #64748b;">Manage your company profile, jobs, and discover top talent.</p>
+                    <p id="welcomeMessage" style="color: #64748b;">Welcome, employer.</p>
                 </div>
             </div>
 
@@ -394,7 +395,6 @@
             updateMembershipUI(user.membership || "free");
             loadEmployerProfile();
             loadMyJobs();
-            loadCandidates();
             loadApplications();
         }
 
@@ -458,6 +458,7 @@
                     if (!data.company_name) {
                         openProfileModal();
                     }
+                    document.getElementById("welcomeMessage").textContent = `Welcome, ${data.company_name || "employer"}.`;
                 }
             } catch (err) { console.error(err); }
         }
@@ -539,6 +540,7 @@
                 }
 
                 recommendationSelect.innerHTML = jobs.map(job => `<option value="${job.id}">${escapeHTML(job.job_title)}</option>`).join("");
+                loadCandidates();
 
                 jobsList.innerHTML = jobs.map(job => `
                     <div class="job-card">
@@ -774,6 +776,16 @@
                     </div>
                 `).join("");
             } catch(err) { list.innerHTML = '<div class="empty-state">Error loading AI matches.</div>'; }
+        }
+
+        function clearCandidateSearch() {
+            document.getElementById("candidateKeyword").value = "";
+            document.getElementById("candidateEducation").value = "";
+            document.getElementById("candidateLocation").value = "";
+            document.getElementById("candidateWorkMode").value = "";
+            document.getElementById("candidateExperience").value = "";
+
+            loadCandidates();
         }
 
         function logout() {

@@ -43,10 +43,19 @@ router.put("/profile", authMiddleware, async (req, res) => {
         }
 
         const { company_name, company_info, contact } = req.body;
+        
+        // Validation from main branch
+        if (!company_name) {
+            return res.status(400).json({ error: "Company name is required." });
+        }
 
-        // Update the employer's details in the database.
+        // Update the employer's details in the database capturing [result]
         const [result] = await pool.query(
-            "UPDATE employers SET company_name = ?, company_info = ?, contact = ? WHERE user_id = ?",
+            `UPDATE employers
+             SET company_name = ?,
+                 company_info = ?,
+                 contact = ?
+             WHERE user_id = ?`,
             [company_name, company_info, contact, req.user.id]
         );
 
