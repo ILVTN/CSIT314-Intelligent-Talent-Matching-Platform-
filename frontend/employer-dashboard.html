@@ -91,7 +91,7 @@
 
             <!-- RECOMMENDED CANDIDATES -->
             <div class="card" id="recommended">
-                <h2>Recommended Candidates</h2>
+                <h2>Recommended Candidates </h2>
                 <p style="color: #64748b; margin-top: -10px; margin-bottom: 20px;">Our matching engine scores candidates against your job requirements.</p>
 
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end;">
@@ -122,7 +122,7 @@
                         <input type="text" id="candidateLocation" placeholder="e.g. Sydney">
                     </div>
                     <div>
-                        <label>Work Mode:</label>
+                        <label>Work Mode: </label>
                         <select id="candidateWorkMode">
                             <option value="">Any Mode</option>
                             <option value="Remote">Remote</option>
@@ -277,6 +277,7 @@
     <!-- ================= SCRIPTS ================= -->
 
     <script>
+      // this function is to redirect user if they are not a employer
         protectPage("employer");
 
         // Store jobs list globally to avoid re-fetching for the edit modal
@@ -290,6 +291,7 @@
             }[tag]));
         };
 
+        // My function to show a small pop-up message on the screen
         function showToast(message, type = "info") {
             let title = "Message";
             if (type === "success") {
@@ -455,8 +457,7 @@
             if (response.ok) {
                 showToast("Job published successfully!", "success");
                 document.getElementById("jobForm").reset();
-                closeCreateJobModal();
-                loadMyJobs();
+                closeCreateJobModal(); loadMyJobs();
             } else {
                 const data = await response.json();
                 showToast(data.error || "Failed to create job.", "error");
@@ -563,6 +564,7 @@
             }
         });
 
+        // delete job and popup confirm accept or cancel
         async function deleteJob(jobId) {
             showPopup(
                 "Confirm Delete",
@@ -570,24 +572,16 @@
                 async function() {
                     try {
                         const response = await fetch(`/api/jobs/${jobId}`, {
-                            method: "DELETE",
-                            headers: {
-                                "Authorization": "Bearer " + token
-                            }
+                            method: "DELETE", headers: {"Authorization": "Bearer " + token}
                         });
 
                         const data = await response.json();
 
                         if (response.ok) {
                             showPopup("Success", data.message || "Job removed.", null, false);
-                            loadMyJobs();
-                            loadApplications();
-                        } else {
-                            showPopup("Error", data.error || "Failed to delete job.", null, false);
-                        }
-                    } catch (err) {
-                        showPopup("Error", "Error deleting job.", null, false);
-                    }
+                            loadMyJobs(); loadApplications();
+                        } else {showPopup("Error", data.error || "Failed to delete job.", null, false);}
+                    } catch (err) { showPopup("Error", "Error deleting job.", null, false); }
                 }
             );
         }
@@ -649,30 +643,15 @@
                     try {
                         const response = await fetch(`/api/jobs/applications/${id}/status`, {
                             method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": "Bearer " + token
-                            },
+                            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token},
                             body: JSON.stringify({ status })
                         });
-
                         const data = await response.json();
-
                         if (response.ok) {
-                            showPopup(
-                                "Success",
-                                data.message || `Application marked as ${status}.`,
-                                null,
-                                false
-                            );
-
+                            showPopup("Success", data.message || `Application marked as ${status}.`, null, false);
                             loadApplications();
-                        } else {
-                            showPopup("Error", data.error || "Failed to update status.", null, false);
-                        }
-                    } catch (err) {
-                        showPopup("Error", "Network error while updating application status.", null, false);
-                    }
+                        } else { showPopup("Error", data.error || "Failed to update status.", null, false); }
+                    } catch (err) { showPopup("Error", "Network error while updating application status.", null, false); }
                 }
             );
         }
