@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employer Portal | TalentMatch</title>
+    <title>Employer Dashboard - Talent Matching Platform</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
@@ -51,22 +51,101 @@
             background: #F9FAFB; border-radius: 8px; border: 1px dashed #D1D5DB;
         }
         
-        /* Styles for all the pop-up forms (modals) */
+        /* Styles for all modal forms */
         .modal-overlay {
-            display: none; position: fixed; inset: 0; z-index: 9999;
-            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
-            align-items: center; justify-content: center;
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(3px);
+            padding: 30px 16px;
+            overflow-y: auto;
+            align-items: flex-start;
+            justify-content: center;
         }
+
         .modal-content {
-            background: #fff; width: 90%; max-width: 600px; border-radius: 12px;
-            padding: 30px; position: relative; max-height: 90vh; overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
+            position: relative;
+            box-sizing: border-box;
+            max-height: none;
+            overflow-y: visible;
         }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 22px;
+            padding-right: 40px;
+        }
+
         .modal-close {
-            position: absolute; right: 20px; top: 20px; font-size: 24px;
-            cursor: pointer; color: #64748b; line-height: 1;
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            color: #64748b;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
         }
-        .modal-close:hover { color: #0f172a; }
+
+        .modal-close:hover {
+            color: #111827;
+        }
+
+        .modal-content form {
+            width: 100%;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            display: block;
+            margin-top: 0;
+            margin-bottom: 14px;
+        }
+
+        .modal-content textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .modal-content button[type="submit"] {
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .modal-overlay {
+                padding: 18px 12px;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                padding: 22px;
+            }
+
+            .modal-content h2 {
+                font-size: 22px;
+            }
+        }
 
         /* A grid layout for the search filter area */
         .search-grid {
@@ -219,23 +298,35 @@
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-box">
+            <h3 id="popupTitle">Message</h3>
+            <p id="popupMessage"></p>
+
+            <div class="popup-actions">
+                <button id="popupConfirmBtn">Confirm</button>
+                <button id="popupCancelBtn" onclick="closePopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- PROFILE MODAL -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-            <h2 style="margin-top: 0;">Edit Company Profile</h2>
+            <h2>Edit Company Profile</h2>
+
             <form id="employerProfileForm">
-                <label>Company Name:</label><br>
-                <input type="text" id="input_company_name" placeholder="e.g. Acme Corp" required><br><br>
+                <label>Company Name:</label>
+                <input type="text" id="input_company_name" placeholder="e.g. Acme Corp" required>
 
-                <label>Company Information:</label><br>
-                <textarea id="input_company_info" placeholder="Describe your company culture and mission..." rows="4"></textarea><br><br>
+                <label>Company Information:</label>
+                <textarea id="input_company_info" placeholder="Describe your company culture and mission..." rows="4"></textarea>
 
-                <label>Contact Email:</label><br>
-                <input type="email" id="input_contact" placeholder="hr@acmecorp.com"><br><br>
+                <label>Contact Email:</label>
+                <input type="email" id="input_contact" placeholder="hr@acmecorp.com">
 
-                <button type="submit" style="width: 100%;">Save Profile</button>
+                <button type="submit">Save Profile</button>
             </form>
         </div>
     </div>
@@ -244,43 +335,39 @@
     <div id="createJobModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" onclick="closeCreateJobModal()">&times;</span>
-            <h2 style="margin-top: 0;">Create New Posting</h2>
+            <h2>Create New Posting</h2>
+
             <form id="jobForm">
-                <label>Job Title:</label><br>
-                <input type="text" id="job_title" required><br><br>
+                <label>Job Title:</label>
+                <input type="text" id="job_title" required>
 
-                <label>Company Information (Overrides profile if set):</label><br>
-                <textarea id="job_company_info" rows="2"></textarea><br><br>
+                <label>Company Information (Overrides profile if set):</label>
+                <textarea id="job_company_info" rows="2"></textarea>
 
-                <label>Job Description:</label><br>
-                <textarea id="job_description" rows="4" required></textarea><br><br>
+                <label>Job Description:</label>
+                <textarea id="job_description" rows="4" required></textarea>
 
-                <label>Required Education:</label><br>
-                <input type="text" id="required_education" placeholder="Bachelor, Master, Diploma"><br><br>
+                <label>Required Education:</label>
+                <input type="text" id="required_education" placeholder="Bachelor, Master, Diploma">
 
-                <label>Required Skills (Comma separated):</label><br>
-                <input type="text" id="required_skills" placeholder="JavaScript, SQL, Node.js"><br><br>
+                <label>Required Skills (Comma separated):</label>
+                <input type="text" id="required_skills" placeholder="JavaScript, SQL, Node.js">
 
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label>Experience (Yrs):</label><br>
-                        <input type="number" id="years_experience" min="0">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Work Mode:</label><br>
-                        <select id="work_mode" required>
-                            <option value="">Select work mode</option>
-                            <option value="Remote">Remote</option>
-                            <option value="On-site">On-site</option>
-                            <option value="Hybrid">Hybrid</option>
-                        </select>
-                    </div>
-                </div><br>
+                <label>Experience (Yrs):</label>
+                <input type="number" id="years_experience" min="0">
 
-                <label>Job Location:</label><br>
-                <input type="text" id="job_location" placeholder="Sydney, NSW"><br><br>
+                <label>Work Mode:</label>
+                <select id="work_mode" required>
+                    <option value="">Select work mode</option>
+                    <option value="Remote">Remote</option>
+                    <option value="On-site">On-site</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
 
-                <button type="submit" style="width: 100%;">Publish Job</button>
+                <label>Job Location:</label>
+                <input type="text" id="job_location" placeholder="Sydney, NSW">
+
+                <button type="submit">Publish Job</button>
             </form>
         </div>
     </div>
@@ -289,40 +376,37 @@
     <div id="editJobModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" onclick="closeEditModal()">&times;</span>
-            <h2 style="margin-top: 0;">Edit Posting</h2>
+            <h2>Edit Posting</h2>
+
             <form id="editJobForm">
                 <input type="hidden" id="edit_job_id">
-                <label>Job Title:</label><br>
-                <input type="text" id="edit_job_title" required><br><br>
 
-                <label>Job Description:</label><br>
-                <textarea id="edit_job_description" rows="4" required></textarea><br><br>
+                <label>Job Title:</label>
+                <input type="text" id="edit_job_title" required>
 
-                <label>Required Education:</label><br>
-                <input type="text" id="edit_required_education"><br><br>
+                <label>Job Description:</label>
+                <textarea id="edit_job_description" rows="4" required></textarea>
 
-                <label>Required Skills:</label><br>
-                <input type="text" id="edit_required_skills"><br><br>
+                <label>Required Education:</label>
+                <input type="text" id="edit_required_education">
 
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label>Experience (Yrs):</label><br>
-                        <input type="number" id="edit_years_experience" min="0">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Work Mode:</label><br>
-                        <select id="edit_work_mode">
-                            <option value="Remote">Remote</option>
-                            <option value="On-site">On-site</option>
-                            <option value="Hybrid">Hybrid</option>
-                        </select>
-                    </div>
-                </div><br>
+                <label>Required Skills:</label>
+                <input type="text" id="edit_required_skills">
 
-                <label>Location:</label><br>
-                <input type="text" id="edit_job_location"><br><br>
+                <label>Experience (Yrs):</label>
+                <input type="number" id="edit_years_experience" min="0">
 
-                <button type="submit" style="width: 100%;">Save Changes</button>
+                <label>Work Mode:</label>
+                <select id="edit_work_mode">
+                    <option value="Remote">Remote</option>
+                    <option value="On-site">On-site</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+
+                <label>Location:</label>
+                <input type="text" id="edit_job_location">
+
+                <button type="submit">Save Changes</button>
             </form>
         </div>
     </div>
@@ -343,18 +427,18 @@
             }[tag]));
         };
 
-        // My function to show a small pop-up message on the screen
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerHTML = `<span>${escapeHTML(message)}</span><span style="cursor:pointer" onclick="this.parentElement.remove()">&times;</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+        function showToast(message, type = "info") {
+            let title = "Message";
+
+            if (type === "success") {
+                title = "Success";
+            } else if (type === "error") {
+                title = "Error";
+            } else if (type === "info") {
+                title = "Information";
+            }
+
+            showPopup(title, message, null, false);
         }
 
         // --- Page Section Navigation ---
@@ -619,16 +703,32 @@
         });
 
         async function deleteJob(jobId) {
-            if (!confirm("Delete this posting? All related applications will be lost.")) return;
-            try {
-                const response = await fetch(`/api/jobs/${jobId}`, {
-                    method: "DELETE", headers: { "Authorization": "Bearer " + token }
-                });
-                if (response.ok) {
-                    showToast("Job removed.", "info");
-                    loadMyJobs(); loadApplications();
+            showPopup(
+                "Confirm Delete",
+                "Delete this posting? All related applications will be lost.",
+                async function() {
+                    try {
+                        const response = await fetch(`/api/jobs/${jobId}`, {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showPopup("Success", data.message || "Job removed.", null, false);
+                            loadMyJobs();
+                            loadApplications();
+                        } else {
+                            showPopup("Error", data.error || "Failed to delete job.", null, false);
+                        }
+                    } catch (err) {
+                        showPopup("Error", "Error deleting job.", null, false);
+                    }
                 }
-            } catch (err) { showToast("Error deleting job.", "error"); }
+            );
         }
 
         // --- Application Management ---
@@ -676,17 +776,42 @@
             } catch (err) { list.innerHTML = '<div class="empty-state">Error loading apps.</div>'; }
         }
 
-        async function updateApplicationStatus(id, status) {
-            const response = await fetch(`/api/jobs/applications/${id}/status`, {
-                method: "PUT", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                body: JSON.stringify({ status })
-            });
-            if (response.ok) {
-                showToast(`Application marked as ${status}.`, status === 'accepted' ? 'success' : 'info');
-                loadApplications();
-            } else {
-                showToast("Failed to update status.", "error");
-            }
+        function updateApplicationStatus(id, status) {
+            const actionText = status === "accepted" ? "accept" : "reject";
+
+            showPopup(
+                "Confirm Application Status",
+                `Are you sure you want to ${actionText} this application?`,
+                async function() {
+                    try {
+                        const response = await fetch(`/api/jobs/applications/${id}/status`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + token
+                            },
+                            body: JSON.stringify({ status })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showPopup(
+                                "Success",
+                                data.message || `Application marked as ${status}.`,
+                                null,
+                                false
+                            );
+
+                            loadApplications();
+                        } else {
+                            showPopup("Error", data.error || "Failed to update status.", null, false);
+                        }
+                    } catch (err) {
+                        showPopup("Error", "Network error while updating application status.", null, false);
+                    }
+                }
+            );
         }
 
         // --- Candidate Search (with Debounce for performance) ---
