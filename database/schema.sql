@@ -1,6 +1,3 @@
--- Drop the database if it exists to ensure a clean start
-DROP DATABASE IF EXISTS talent_platform;
-
 -- Create the database and switch to it
 CREATE DATABASE talent_platform;
 USE talent_platform;
@@ -24,6 +21,7 @@ CREATE TABLE candidates (
     education VARCHAR(255),
     major VARCHAR(255),
     years_experience INT,
+    work_experience TEXT,
     skills TEXT,
     preferred_work_mode VARCHAR(100),
     preferred_location VARCHAR(255),

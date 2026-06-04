@@ -42,6 +42,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
             education,
             major,
             years_experience,
+            work_experience,
             skills,
             preferred_work_mode,
             preferred_location
@@ -62,6 +63,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
                  education = ?, 
                  major = ?, 
                  years_experience = ?, 
+                 work_experience = ?,
                  skills = ?, 
                  preferred_work_mode = ?, 
                  preferred_location = ?
@@ -72,6 +74,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
                 education,
                 major,
                 years_experience,
+                work_experience,
                 skills,
                 preferred_work_mode,
                 preferred_location,
@@ -145,6 +148,7 @@ router.get("/", authMiddleware, async (req, res) => {
                     "full_name",
                     "education",
                     "major",
+                    "work_experience",
                     "skills",
                     "preferred_location",
                     "preferred_work_mode"
