@@ -622,7 +622,7 @@ a button {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);  
 } 
 
-.popup-box h3 {
+.popup-box h3 { 
     margin-top: 0;
 }
 
@@ -636,7 +636,7 @@ a button {
 .popup-actions button {
     padding: 10px 16px;
     cursor: pointer;
-}
+} 
 
 #popupConfirmBtn {
     background: green;
@@ -657,29 +657,14 @@ a button {
 .modal-overlay {
     display: none;
     position: fixed;
-    z-index: 1000;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.45);
     padding: 30px 15px;
     overflow-y: auto;
+    align-items: flex-start;
+    justify-content: center;
 }
-
-.modal-box {
-    background: #ffffff;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 28px; 
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    position: relative;
-}
-
-.modal-box h2 {
-    margin-top: 0;
-    margin-bottom: 22px;
-    padding-right: 35px; 
-} 
 
 .modal-close {
     position: absolute;
@@ -694,34 +679,119 @@ a button {
 
 .modal-close:hover {
     color: #111;
-}
+} 
 
-.modal-box form {
+.modal-content {
+    background: #ffffff;
     width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 28px; 
+    border-radius: 12px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
+    position: relative;
+    box-sizing: border-box;
+} 
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+    padding-right: 40px;
 }
 
-.modal-box label {
+.modal-content label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px; 
     font-weight: 500;
+    color: #374151;
 }
 
-.modal-box input,
-.modal-box textarea,
-.modal-box select {
-    width: 100%;
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    width: 100%;  
+    max-width: 100%;
     box-sizing: border-box;
     display: block;
-    margin-bottom: 18px;
+    margin-top: 0;
+    margin-bottom: 14px;
 }
 
-.modal-box textarea { 
-    min-height: 90px;
-    resize: vertical;
+.modal-content textarea {
+    min-height: 70px;
+    resize: vertical; 
 }
 
-.modal-box button[type="submit"] {
-    margin-top: 5px;
+.modal-content button[type="submit"] {
+    width: 100%;
+    margin-top: 6px;
+}
+
+.loader {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #2563eb;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); } 
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 9999px ;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase; 
+    letter-spacing: 0.05em;
+    display: inline-block;
+}
+
+.badge-accepted {
+    background: #D1FAE5;
+    color: #065F46; 
+}
+
+.badge-rejected {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.badge-submitted {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.empty-state {  
+    text-align: center;
+    padding: 40px 20px;
+    color: #6B7280;
+    background: #F9FAFB;
+    border-radius: 8px;
+    border: 1px dashed #D1D5DB;
+}
+
+.search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;  
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.search-grid input,
+.search-grid select {
+    margin-bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Mobile dashboard layout */
@@ -807,9 +877,16 @@ a button {
         max-width: 92%;
     }
 
-    .modal-box {  
-        width: 92%;
-        max-width: 92%;
-        padding: 20px;
+    .modal-overlay {
+        padding: 18px 12px;
     }
-} 
+
+    .modal-content {
+        max-width: 100%;
+        padding: 22px;
+    }
+
+    .modal-content h2 {
+        font-size: 22px;
+    }
+}

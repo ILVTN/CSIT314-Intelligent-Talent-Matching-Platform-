@@ -8,157 +8,11 @@
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
     <script src="js/popupAlert.js"></script>
-
-    <style>
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 0.8em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-block;
-        }
-
-        .badge-accepted { background: #D1FAE5; color: #065F46; }
-        .badge-rejected { background: #FEE2E2; color: #991B1B; }
-        .badge-submitted { background: #DBEAFE; color: #1E40AF; }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6B7280;
-            background: #F9FAFB;
-            border-radius: 8px;
-            border: 1px dashed #D1D5DB;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(15, 23, 42, 0.72);
-            backdrop-filter: blur(3px);
-            padding: 30px 16px;
-            overflow-y: auto;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: #ffffff;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 28px;
-            border-radius: 12px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
-            margin-bottom: 22px;
-            padding-right: 40px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            color: #64748b;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover { color: #111827; }
-
-        .modal-content label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .modal-content input,
-        .modal-content textarea,
-        .modal-content select {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            display: block;
-            margin-top: 0;
-            margin-bottom: 14px;
-        }
-
-        .modal-content textarea {
-            min-height: 70px;
-            resize: vertical;
-        }
-
-        .modal-content button[type="submit"] {
-            width: 100%;
-            margin-top: 6px;
-        }
-
-        .search-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .search-grid input,
-        .search-grid select {
-            margin-bottom: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        @media (max-width: 600px) {
-            .modal-overlay { padding: 18px 12px; }
-            .modal-content { max-width: 100%; padding: 22px; }
-            .modal-content h2 { font-size: 22px; }
-        }
-    </style>
-</head>
+</head>  
 
 <body>
     <div id="toast-container"></div>
-
+    <!-- dashboard layout that change depend on screen size -->
     <div class="dashboard-layout">
         <aside class="sidebar">
             <h2>TalentMatch</h2>
@@ -170,10 +24,11 @@
             <button onclick="logout()" style="margin-top: auto;">Logout</button>
         </aside>
 
+        <!--3 card display main information  -->
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <div>
-                    <h1>Candidate Portal</h1>
+                    <h1>Candidate Dashboard</h1>
                     <p id="welcomeMessage" style="color: #64748b;">Welcome, candidate.</p>
                 </div>
             </div>
@@ -181,7 +36,7 @@
             <div class="stats-grid">
                 <button class="stat-card stat-button" onclick="window.location.href='#browse'">
                     <h3 id="totalJobs">0</h3>
-                    <p>Available Jobs</p>
+                    <p>Available Jobs (Search Related)</p>
                 </button>
 
                 <button class="stat-card stat-button" onclick="window.location.href='#recommended'">
@@ -194,7 +49,8 @@
                     <p>Current Tier</p>
                 </button>
             </div>
-
+            
+            <!--display all information about the candidate  -->
             <div class="card" id="profile">
                 <div style="display: flex; justify-content: space-between; align-items: start;">
                     <div>
@@ -202,7 +58,7 @@
                         <p id="displayCandidateContact" style="color: #64748b; margin-top: -10px;">Please set up your profile.</p>
                     </div>
                     <button onclick="openProfileModal()" style="background: transparent; border: 1px solid #cbd5e1; color: #334155; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-radius: 6px; cursor: pointer;">
-                        <span style="font-size: 1.1em;">✏️</span> Edit Profile
+                        Edit Profile
                     </button>
                 </div>
 
@@ -210,25 +66,26 @@
                     <h3 style="margin-top: 0; color: #1e293b;">Profile Summary</h3>
 
                     <div style="display: grid; grid-template-columns: 1fr; gap: 12px; color: #475569;">
-                        <div><strong>🎓 Education:</strong> <span id="displayEducation">Not provided</span></div>
-                        <div><strong>📚 Major:</strong> <span id="displayMajor">Not provided</span></div>
-                        <div><strong>💼 Years of Experience:</strong> <span id="displayYearsExperience">0</span></div>
-                        <div><strong>📍 Preferred Location:</strong> <span id="displayPreferredLocation">Not provided</span></div>
-                        <div><strong>💻 Work Mode:</strong> <span id="displayPreferredWorkMode">Not provided</span></div>
-                        <div><strong>🛠 Skills:</strong> <span id="displaySkills">Not provided</span></div>
+                        <div><strong>Education:</strong> <span id="displayEducation">Not provided</span> </div>
+                        <div><strong>Major:</strong> <span id="displayMajor">Not provided</span></div>
+                        <div><strong>Years of Experience:</strong> <span id="displayYearsExperience">0</span></div>
+                        <div><strong>Preferred Location:</strong> <span id="displayPreferredLocation">Not provided </span></div>
+                        <div><strong>Work Mode:</strong> <span id="displayPreferredWorkMode">Not provided</span></div>
+                        <div><strong>Skills:</strong> <span id="displaySkills">Not provided</span> </div>
                     </div>
 
                     <div style="margin-top: 18px;">
-                        <h3 style="margin-bottom: 8px; color: #1e293b;">Work Experience</h3>
+                        <h3 style="margin-bottom: 8px; color: #1e293b;">Work Experience: </h3>
                         <p id="displayWorkExperience" style="line-height: 1.6; color: #475569; white-space: pre-wrap;">Work experience will appear here once you set up your profile.</p>
                     </div>
                 </div>
             </div>
 
+            <!-- recommended jobs for the candidates  -->
             <div class="card" id="recommended">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <h2 style="margin-bottom: 5px;">AI-Matched Jobs</h2>
+                        <h2 style="margin-bottom: 5px;">Recommended Jobs</h2>
                         <p style="color: #64748b; margin-top: 0;">Jobs are ranked using your skills, education, experience, work mode, and location.</p>
                     </div>
                     <button onclick="loadRecommendedJobs()" style="padding: 8px 14px; font-size: 0.9em; background: #e2e8f0; color: #0f172a; margin: 0;">Refresh</button>
@@ -236,8 +93,9 @@
                 <div id="recommendedJobsList"></div>
             </div>
 
+            <!-- search and filter section  -->
             <div class="card" id="browse">
-                <h2>Job Database</h2>
+                <h2>Search & Filter Jobs</h2>
                 <div class="search-grid">
                     <div>
                         <label>Keyword:</label>
@@ -282,8 +140,9 @@
                 <div id="myApplicationsList"></div>
             </div>
 
+            <!-- membership section  -->
             <div class="card" id="membership">
-                <h2>Plan & Billing</h2>
+                <h2>Current Tier</h2>
                 <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <p style="margin: 0; color: #64748b;">Current Tier</p>
@@ -296,6 +155,7 @@
         </main>
     </div>
 
+    <!-- confirmation popup for action  -->
     <div id="popupOverlay" class="popup-overlay">
         <div class="popup-box">
             <h3 id="popupTitle">Message</h3>
@@ -307,6 +167,7 @@
         </div>
     </div>
 
+    <!--  candidates profiles modal  -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" onclick="closeProfileModal()">&times;</span>
@@ -356,9 +217,13 @@
 
         function showToast(message, type = "info") {
             let title = "Message";
-            if (type === "success") title = "Success";
-            else if (type === "error") title = "Error";
-            else if (type === "info") title = "Information";
+            if (type === "success") {
+                title = "Success";
+            } else if (type === "error") {
+                title = "Error";
+            } else if (type === "info") {
+                title = "Information";
+            }
             showPopup(title, message, null, false);
         }
 
@@ -409,7 +274,7 @@
 
             if (membership === "member") {
                 upgradeBtn.style.display = "none";
-                perkText.innerHTML = "✨ <strong>Premium Active:</strong> Unlimited recommendations unlocked.";
+                perkText.innerHTML = "Premium Active: Unlimited recommendations unlocked.";
                 perkText.style.color = "#059669";
             } else {
                 upgradeBtn.style.display = "block";
@@ -453,13 +318,13 @@
                     document.getElementById("displayEducation").textContent = data.education || "Not provided";
                     document.getElementById("displayMajor").textContent = data.major || "Not provided";
                     document.getElementById("displayYearsExperience").textContent = `${data.years_experience || 0} years`;
-                    document.getElementById("displayPreferredLocation").textContent = data.preferred_location || "Not provided";
+                    document.getElementById("displayPreferredLocation").textContent = data.preferred_location || "Not provided";  
                     document.getElementById("displayPreferredWorkMode").textContent = data.preferred_work_mode || "Not provided";
                     document.getElementById("displaySkills").textContent = data.skills || "Not provided";
-                    document.getElementById("displayWorkExperience").textContent = data.work_experience || "Work experience will appear here once you set up your profile.";
+                    document.getElementById("displayWorkExperience").textContent = data.work_experience || "Work experience will appear here once you set up your profile. ";
 
                     document.getElementById("full_name").value = data.full_name || "";
-                    document.getElementById("contact").value = data.contact || "";
+                    document.getElementById("contact").value = data.contact || ""; 
                     document.getElementById("education").value = data.education || "";
                     document.getElementById("major").value = data.major || "";
                     document.getElementById("years_experience").value = data.years_experience || "";
@@ -517,7 +382,7 @@
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(loadJobs, 400);
             });
-        });
+        })  ;
 
         async function loadJobs() {
             const jobsList = document.getElementById("jobsList");
@@ -559,11 +424,11 @@
                         </div>
                         <p style="color:#475569; font-size:0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.9em; background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:15px;">
-                            <div><strong>🏢 Company:</strong> ${escapeHTML(job.company_name || "N/A")}</div>
-                            <div><strong>🎓 Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
-                            <div><strong>🛠 Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
-                            <div><strong>⏳ Experience:</strong> ${job.years_experience || 0}+ Years</div>
-                            <div><strong>📍 Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div><strong>Company:</strong> ${escapeHTML(job.company_name || "N/A")}</div>
+                            <div><strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div><strong>Required Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
+                            <div><strong>Required Experience:</strong> ${job.years_experience || 0}+ Years</div>
+                            <div><strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
                         </div>
                         <button onclick="applyJob(${job.id})" style="width:100%; margin:0;">Apply Now</button>
                     </div>
@@ -580,7 +445,7 @@
             try {
                 const response = await fetch("/api/recommendations/jobs", { headers: { "Authorization": "Bearer " + token }});
                 const jobs = await response.json();
-                document.getElementById("totalRecommendedJobs").textContent = jobs.length || 0;
+                document.getElementById("totalRecommendedJobs").textContent =  jobs.length || 0;
 
                 if (!response.ok) {
                     list.innerHTML = `<div class="empty-state">Unable to load recommended jobs.</div>`;
@@ -588,14 +453,14 @@
                 }
 
                 if (jobs.length === 0) {
-                    list.innerHTML = `<div class="empty-state"><h3>No AI Matches</h3><p>Complete your profile to improve job recommendations.</p></div>`;
+                    list.innerHTML = `<div class="empty-state"><h3>No recommendation </h3> <p>Complete your profile to improve job recommendations. </p></div>`;
                     return;
                 }
 
                 let upsellBanner = "";
                 if (user.membership !== "member") {
                     upsellBanner = `<div style="background:#FEF3C7; color:#92400E; padding:12px; border-radius:8px; margin-bottom:20px; font-weight:500; font-size:0.9em; text-align:center; border:1px solid #FCD34D;">
-                        ⭐ Showing top 10 matches. <a href="#membership" style="color:#B45309; text-decoration:underline;">Upgrade to Premium</a> to see all jobs!
+                        Top 10 recommended matches. Upgrades to <a href="#membership" style="color:#B45309; text-decoration:underline;">Member</a> to see all recommended jobs!
                     </div>`;
                 }
 
@@ -608,17 +473,17 @@
                         <p style="color:#64748b; font-weight:500;">${escapeHTML(job.company_name || "N/A")}</p>
                         <p style="color:#475569; font-size:0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.9em; margin-top:15px; margin-bottom:15px;">
-                            <div>🎓 ${escapeHTML(job.required_education || "Any")}</div>
-                            <div>💼 ${job.years_experience || 0}+ Yrs</div>
-                            <div>💻 ${escapeHTML(job.work_mode || "Flexible")}</div>
-                            <div>📍 ${escapeHTML(job.job_location || "Any")}</div>
-                            <div style="grid-column: span 2;">🛠 ${escapeHTML(job.required_skills || "Any")}</div>
+                            <div> <strong>Required Education: </strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div><strong>Required Years of Experience: </strong> ${job.years_experience || 0}+ Yrs</div>
+                            <div><strong>Workmode: </strong> ${escapeHTML(job.work_mode || "Flexible")}</div>
+                            <div><strong>Location: </strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div style="grid-column: span 2;"><strong>Required Skills:  </strong> ${escapeHTML(job.required_skills || "Any")}</div>
                         </div>
                         <button onclick="applyJob(${job.id})" style="width:100%; margin:0;">Apply Now</button>
                     </div>
                 `).join("");
             } catch (err) {
-                list.innerHTML = `<div class="empty-state">Error loading AI matches.</div>`;
+                list.innerHTML = `<div class="empty-state">Error loading recommendations.</div>`;
             }
         }
 
@@ -672,17 +537,19 @@
 
                 list.innerHTML = applications.map(app => `
                     <div class="application-card" style="border-left:4px solid #2563eb;">
-                        <div style="display:flex; justify-content:space-between;">
+                        <div style="display:flex; justify-content:space-between; align-items: center;">
                             <h3 style="margin-top:0;">${escapeHTML(app.job_title || "")}</h3>
-                            ${getStatusBadge(app.status)}
+                            <div style="display:flex; justify-content:center; align-items:center;">
+                                ${getStatusBadge(app.status)}
+                            </div>
                         </div>
                         <p style="color:#64748b; margin-top:-5px; font-weight:500;">Company: ${escapeHTML(app.company_name || "N/A")}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.9em; margin:15px 0;">
-                            <div>🎓 ${escapeHTML(app.required_education || "Any")}</div>
-                            <div>💼 ${app.years_experience || 0}+ Years</div>
-                            <div>💻 ${escapeHTML(app.work_mode || "Flexible")}</div>
-                            <div>📍 ${escapeHTML(app.job_location || "Any")}</div>
-                            <div style="grid-column:span 2;">🛠 ${escapeHTML(app.required_skills || "Any")}</div>
+                            <div><strong>Required Education: </strong>${escapeHTML(app.required_education || "Any")}</div>
+                            <div><strong>Required years of experience: </strong>${app.years_experience || 0}+ Years</div>
+                            <div><strong>Workmode: </strong>${escapeHTML(app.work_mode || "Flexible")}</div>
+                            <div><strong>Location: </strong>${escapeHTML(app.job_location || "Any")}</div>
+                            <div style="grid-column:span 2;"> <strong>Required Skills: </strong> ${escapeHTML(app.required_skills || "Any")}</div>
                         </div>
                         <p style="color:#475569; font-size:0.95em;">${escapeHTML(app.job_description || "")}</p>
                     </div>

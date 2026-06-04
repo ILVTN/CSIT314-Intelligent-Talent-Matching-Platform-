@@ -8,157 +8,12 @@
     <link rel="icon" type="image/png" href="images/TalentMatchLogo.png">
     <script src="js/loginStatus.js"></script>
     <script src="js/popupAlert.js"></script>
-    <style>
-        /* My custom styles for a better UI */
-        
-        /* For pop-up messages (like 'Profile Saved!') */
-        #toast-container {
-            position: fixed; top: 20px; right: 20px; z-index: 10000;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast {
-            min-width: 250px; padding: 15px 20px; border-radius: 8px;
-            color: #fff; font-weight: 500; font-size: 0.95em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .toast.show { transform: translateX(0); }
-        .toast-success { background: #10B981; } 
-        .toast-error { background: #EF4444; }   
-        .toast-info { background: #3B82F6; }    
-
-        /* Simple loading spinner for when data is being fetched */
-        .loader {
-            border: 3px solid #f3f3f3; border-top: 3px solid #2563eb;
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; margin: 20px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Coloured badges for application status */
-        .badge {
-            padding: 4px 10px; border-radius: 9999px; font-size: 0.8em; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.05em; display: inline-block;
-        }
-        .badge-accepted { background: #D1FAE5; color: #065F46; }
-        .badge-rejected { background: #FEE2E2; color: #991B1B; }
-        .badge-submitted { background: #DBEAFE; color: #1E40AF; }
-
-        /* A message to show when a list is empty (e.g., no jobs found) */
-        .empty-state {
-            text-align: center; padding: 40px 20px; color: #6B7280;
-            background: #F9FAFB; border-radius: 8px; border: 1px dashed #D1D5DB;
-        }
-        
-        /* Styles for all modal forms */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(15, 23, 42, 0.72);
-            backdrop-filter: blur(3px);
-            padding: 30px 16px;
-            overflow-y: auto;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: #ffffff;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 28px;
-            border-radius: 12px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
-            position: relative;
-            box-sizing: border-box;
-            max-height: none;
-            overflow-y: visible;
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
-            margin-bottom: 22px;
-            padding-right: 40px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            color: #64748b;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: #111827;
-        }
-
-        .modal-content form {
-            width: 100%;
-        }
-
-        .modal-content label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .modal-content input,
-        .modal-content textarea,
-        .modal-content select {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            display: block;
-            margin-top: 0;
-            margin-bottom: 14px;
-        }
-
-        .modal-content textarea {
-            min-height: 70px;
-            resize: vertical;
-        }
-
-        .modal-content button[type="submit"] {
-            width: 100%;
-            margin-top: 6px;
-        }
-
-        @media (max-width: 600px) {
-            .modal-overlay {
-                padding: 18px 12px;
-            }
-
-            .modal-content {
-                max-width: 100%;
-                padding: 22px;
-            }
-
-            .modal-content h2 {
-                font-size: 22px;
-            }
-        }
-
-        /* A grid layout for the search filter area */
-        .search-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;
-            margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
-        }
-        .search-grid input, .search-grid select { margin-bottom: 0; width: 100%; box-sizing: border-box; }
-    </style>
 </head>
 
 <body>
     <div id="toast-container"></div>
 
+    <!-- dashboard layout that change depend on screen size -->
     <div class="dashboard-layout">
         <aside class="sidebar">
             <h2>TalentMatch</h2>
@@ -171,10 +26,11 @@
             <button onclick="logout()" style="margin-top: auto;">Logout</button>
         </aside>
 
+        <!--3 card display main information  -->
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <div>
-                    <h1>Employer Portal</h1>
+                    <h1>Employer Dashboard</h1>
                     <p id="welcomeMessage" style="color: #64748b;">Welcome, employer.</p>
                 </div>
             </div>
@@ -182,12 +38,12 @@
             <div class="stats-grid">
                 <button class="stat-card stat-button" onclick="window.location.href='#my-jobs'">
                     <h3 id="totalMyJobs">0</h3>
-                    <p>Active Postings</p>
+                    <p>Active Job Postings</p>
                 </button>
 
                 <button class="stat-card stat-button" onclick="window.location.href='#search'">
                     <h3 id="totalCandidates">0</h3>
-                    <p>Talent Pool</p>
+                    <p>Total Candidates (Search Related)</p>
                 </button>
 
                 <button class="stat-card stat-button" onclick="window.location.href='#membership'">
@@ -204,7 +60,7 @@
                         <p id="displayCompanyContact" style="color: #64748b; margin-top: -10px;">Please set up your profile.</p>
                     </div>
                     <button onclick="openProfileModal()" style="background: transparent; border: 1px solid #cbd5e1; color: #334155; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-radius: 6px; cursor: pointer;">
-                        <span style="font-size: 1.1em;">✏️</span> Edit Profile
+                        Edit Profile
                     </button>
                 </div>
 
@@ -218,7 +74,7 @@
             <div class="card" id="my-jobs">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="margin: 0;">Active Postings</h2>
-                    <button onclick="openCreateJobModal()" style="margin: 0; background: #2563eb; padding: 10px 20px;">+ Create New Job</button>
+                    <button onclick="openCreateJobModal()" style="margin: 0; background: #2563eb; padding: 10px 20px;">Create New Job</button>
                 </div>
                 <div id="jobsList"></div>
             </div>
@@ -235,7 +91,7 @@
 
             <!-- RECOMMENDED CANDIDATES -->
             <div class="card" id="recommended">
-                <h2>AI-Matched Candidates</h2>
+                <h2>Recommended Candidates</h2>
                 <p style="color: #64748b; margin-top: -10px; margin-bottom: 20px;">Our matching engine scores candidates against your job requirements.</p>
 
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end;">
@@ -243,7 +99,7 @@
                         <label style="font-weight: 600;">Select Target Job:</label>
                         <select id="recommendationJobSelect" style="margin-bottom: 0;"></select>
                     </div>
-                    <button onclick="loadRecommendedCandidates()" style="margin-bottom: 0;">Analyze Matches</button>
+                    <button onclick="loadRecommendedCandidates()" style="margin-bottom: 0; flex:1; max-width: 300px;">See recommended candidates</button>
                 </div>
                 <br>
                 <div id="recommendedCandidatesList"></div>
@@ -251,11 +107,11 @@
 
             <!-- ADVANCED SEARCH -->
             <div class="card" id="search">
-                <h2>Talent Database</h2>
+                <h2>Search & Filter Candidates</h2>
                 <div class="search-grid">
                     <div>
                         <label>Keywords (Skills, Title):</label>
-                        <input type="text" id="candidateKeyword" placeholder="e.g. javascript">
+                        <input type="text" id="candidateKeyword" placeholder="e.g. javascript, documentation">
                     </div>
                     <div>
                         <label>Education Level:</label>
@@ -279,12 +135,18 @@
                         <input type="number" id="candidateExperience" min="0" placeholder="e.g. 2">
                     </div>
                 </div>
+
+              <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                  <button onclick="loadCandidates()" style="margin: 0;">Search</button>
+                  <button onclick="clearCandidateSearch()" style="background: #e2e8f0; color: #0f172a; margin: 0;">Clear</button>
+              </div>
+
                 <div id="candidatesList"></div>
             </div>
 
             <!-- MEMBERSHIP -->
             <div class="card" id="membership">
-                <h2>Plan & Billing</h2>
+                <h2>Current Tier</h2>
                 <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <p style="margin: 0; color: #64748b;">Current Tier</p>
@@ -298,6 +160,7 @@
     </div>
 
     <!-- ================= MODALS ================= -->
+    <!-- popup confirmation for important actions  -->
     <div id="popupOverlay" class="popup-overlay">
         <div class="popup-box">
             <h3 id="popupTitle">Message</h3>
@@ -360,12 +223,12 @@
                 <select id="work_mode" required>
                     <option value="">Select work mode</option>
                     <option value="Remote">Remote</option>
-                    <option value="On-site">On-site</option>
+                    <option value="On-site">On-site</option>  
                     <option value="Hybrid">Hybrid</option>
                 </select>
 
                 <label>Job Location:</label>
-                <input type="text" id="job_location" placeholder="Sydney, NSW">
+                <input type="text" id="job_location" placeholder="Sydney">
 
                 <button type="submit">Publish Job</button>
             </form>
@@ -409,7 +272,7 @@
                 <button type="submit">Save Changes</button>
             </form>
         </div>
-    </div>
+    </div>        
 
     <!-- ================= SCRIPTS ================= -->
 
@@ -429,7 +292,6 @@
 
         function showToast(message, type = "info") {
             let title = "Message";
-
             if (type === "success") {
                 title = "Success";
             } else if (type === "error") {
@@ -437,11 +299,10 @@
             } else if (type === "info") {
                 title = "Information";
             }
-
             showPopup(title, message, null, false);
         }
 
-        // --- Page Section Navigation ---
+        // --- Page Section Navigation ---    
         function showSection() {
             let hash = window.location.hash || "#company";
             document.querySelectorAll("main > .card").forEach(c => c.style.display = "none");
@@ -454,7 +315,7 @@
                 } else {
                     link.style.backgroundColor = "transparent"; link.style.color = "inherit";
                 }
-            });
+            });   
         }
         window.addEventListener("DOMContentLoaded", showSection);
         window.addEventListener("hashchange", showSection);
@@ -469,7 +330,7 @@
         function closeEditModal() { document.getElementById('editJobModal').style.display = 'none'; }
 
 
-        // --- Page Load & Setup ---
+        // --- Page Load & Setup ---   
         const token = localStorage.getItem("token");
         const user = getLoggedInUser();
 
@@ -487,11 +348,11 @@
             document.getElementById("membershipStatusDisplay").textContent = tier;
             document.getElementById("employerMembership").textContent = tier;
             const perkText = document.getElementById("membershipPerkText");
-            const upgradeBtn = document.getElementById("upgradeBtn");
+            const upgradeBtn = document.getElementById("upgradeBtn");   
 
             if (tier === 'member') {
                 upgradeBtn.style.display = "none";
-                perkText.innerHTML = "✨ <strong>Premium Active:</strong> Unlimited recommendations unlocked.";
+                perkText.innerHTML = "Premium Active: Unlimited candidate recommendations unlocked.";
                 perkText.style.color = "#059669";
             } else {
                 upgradeBtn.style.display = "block";
@@ -634,10 +495,10 @@
                         </div>
                         <p style="color: #475569; font-size: 0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; background: #f8fafc; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-                            <div><strong>🎓 Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
-                            <div><strong>🛠 Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
-                            <div><strong>⏳ Experience:</strong> ${job.years_experience || 0}+ Years</div>
-                            <div><strong>📍 Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div><strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div><strong>Required Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
+                            <div><strong>Required Years of Experience:</strong> ${job.years_experience || 0}+ Years</div>
+                            <div>  <strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button onclick="openEditModal(${job.id})" style="flex:1; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; margin:0;">Edit Post</button>
@@ -735,7 +596,7 @@
         function getStatusBadge(status) {
             const s = status ? status.toLowerCase() : 'submitted';
             if(s === 'accepted') return `<span class="badge badge-accepted">Accepted</span>`;
-            if(s === 'rejected') return `<span class="badge badge-rejected">Rejected</span>`;
+            if(s === 'rejected') return `<span class="badge badge-rejected">Rejected</span>`; 
             return `<span class="badge badge-submitted">Pending</span>`;
         }
 
@@ -752,17 +613,19 @@
 
                 list.innerHTML = apps.map(app => `
                     <div class="application-card" style="border-left: 4px solid #2563eb;">
-                        <div style="display:flex; justify-content: space-between;">
+                        <div style="display:flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin-top:0;">${escapeHTML(app.full_name)}</h3>
-                            ${getStatusBadge(app.status)}
+                            <div style="display:flex; justify-content:center; align-items:center;"> 
+                                ${getStatusBadge(app.status)}
+                            </div>
                         </div>
                         <p style="color: #64748b; margin-top: -5px; font-weight: 500;">Applying for: ${escapeHTML(app.job_title)}</p>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em; margin: 15px 0;">
-                            <div>📧 ${escapeHTML(app.email)}</div>
-                            <div>🎓 ${escapeHTML(app.education)} (${escapeHTML(app.major)})</div>
-                            <div>💼 ${app.years_experience || 0} Years Exp</div>
-                            <div>🛠 ${escapeHTML(app.skills)}</div>
+                            <div><strong> Contact: </strong>${escapeHTML(app.email)}</div>
+                            <div><strong>Education: </strong>${escapeHTML(app.education)} (${escapeHTML(app.major)})</div>
+                            <div><strong>Years of Experience: </strong>${app.years_experience || 0} Years Exp</div>  
+                            <div><strong>Skills: </strong> ${escapeHTML(app.skills)}</div>
                         </div>
 
                         ${app.status !== 'accepted' && app.status !== 'rejected' ? `
@@ -773,7 +636,7 @@
                         ` : ''}
                     </div>
                 `).join("");
-            } catch (err) { list.innerHTML = '<div class="empty-state">Error loading apps.</div>'; }
+            } catch (err) { list.innerHTML = '<div class="empty-state">Error loading apps.</div>'; } 
         }
 
         function updateApplicationStatus(id, status) {
@@ -782,7 +645,7 @@
             showPopup(
                 "Confirm Application Status",
                 `Are you sure you want to ${actionText} this application?`,
-                async function() {
+                async function()  { 
                     try {
                         const response = await fetch(`/api/jobs/applications/${id}/status`, {
                             method: "PUT",
@@ -852,19 +715,21 @@
                             <h3 style="margin:0; color:#0f172a; font-size:1.2em;">${escapeHTML(c.full_name)}</h3>
                             <span class="badge badge-submitted">${escapeHTML(c.preferred_work_mode || "Any Mode")}</span>
                         </div>
-                        <p style="color: #64748b; margin: 5px 0 15px 0; font-size: 0.9em;">📍 ${escapeHTML(c.preferred_location || "Anywhere")} &bull; 📧 ${escapeHTML(c.email)}</p>
                         
+                         <p style="color: #64748b; font-size: 0.9em;"><strong>Contact: </strong> ${escapeHTML(c.email)}</p>
+                        <p style="color: #64748b; margin: 5px 0 15px 0; font-size: 0.9em;"><strong>Location: </strong>${escapeHTML(c.preferred_location || "Anywhere")}</p>
+                         
                         <div style="background: #f8fafc; padding: 12px; border-radius: 6px; font-size: 0.9em; color: #334155;">
-                            <div style="margin-bottom: 8px;"><strong>Education:</strong> ${escapeHTML(c.education)} in ${escapeHTML(c.major)}</div>
-                            <div style="margin-bottom: 8px;"><strong>Experience:</strong> ${c.years_experience || 0} years</div>
-                            <div><strong>Top Skills:</strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(c.skills)}</span></div>
+                            <div style="margin-bottom: 8px;"><strong>Education: </strong> ${escapeHTML(c.education)} in ${escapeHTML(c.major)}</div>
+                            <div style="margin-bottom: 8px;"> <strong>Experience: </strong> ${c.years_experience || 0} years</div>
+                            <div ><strong>Skills: </strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(c.skills)}</span></div>
                         </div>
                     </div>
                 `).join("");
             } catch (err) { list.innerHTML = '<div class="empty-state">Error searching database.</div>'; }
         }
 
-        // --- AI Recommendation Functions ---
+        // --- Recommendation Functions ---
         async function loadRecommendedCandidates() {
             const jobId = document.getElementById("recommendationJobSelect").value;
             const list = document.getElementById("recommendedCandidatesList");
@@ -876,14 +741,14 @@
                 const candidates = await response.json();
 
                 if (candidates.length === 0) {
-                    list.innerHTML = `<div class="empty-state"><h3>No AI Matches</h3><p>We couldn't find profiles matching this job's criteria.</p></div>`;
+                    list.innerHTML = `<div class="empty-state"><h3>No recommendation</h3><p>We couldn't find candidates matching this job's criteria.</p></div>`;
                     return;
                 }
                 
                 let upsellBanner = '';
                 if(user.membership !== 'member') {
                     upsellBanner = `<div style="background: #FEF3C7; color: #92400E; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; font-size: 0.9em; text-align: center; border: 1px solid #FCD34D;">
-                        ⭐ Showing top 10 matches. <a href="#membership" style="color: #B45309; text-decoration: underline;">Upgrade to Premium</a> to see all candidates!
+                        Top 10 recommendations. Upgrade to <a href="#membership" style="color: #B45309; text-decoration: underline;">Member</a> to see all candidates!
                     </div>`;
                 }
 
@@ -894,13 +759,13 @@
                         </div>
                         <h3 style="margin-top:0;">${escapeHTML(c.full_name)}</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em; margin-top: 15px;">
-                            <div>🎓 ${escapeHTML(c.education)}</div>
-                            <div>💼 ${c.years_experience || 0} Yrs</div>
-                            <div style="grid-column: span 2;">🛠 ${escapeHTML(c.skills)}</div>
+                            <div><strong>Education: </strong>${escapeHTML(c.education)}</div>
+                            <div><strong> Years of Experience: </strong>${c.years_experience || 0} Yrs</div>
+                            <div style="grid-column: span 2;"><strong>Skills: </strong>${escapeHTML(c.skills)}</div>
                         </div>
                     </div>
                 `).join("");
-            } catch(err) { list.innerHTML = '<div class="empty-state">Error loading AI matches.</div>'; }
+            } catch(err) { list.innerHTML = '<div class="empty-state">Error loading recommendations.</div>'; }
         }
 
         function clearCandidateSearch() {
