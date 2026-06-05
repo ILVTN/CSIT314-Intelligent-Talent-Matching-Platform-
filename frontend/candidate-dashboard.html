@@ -408,13 +408,13 @@
                             <h3 style="margin-top:0; color:#1e293b;">${escapeHTML(job.job_title)}</h3>
                             <span class="badge badge-submitted">${escapeHTML(job.work_mode || "Flexible")}</span>
                         </div>
-                        <p style="color:#475569; font-size:0.95em;">${escapeHTML(job.job_description)}</p>
+                        <p style="color:#64748b; margin-top: -5px; font-weight:500;">${escapeHTML(job.company_name || "N/A")}</p>
+                        <p style="color:#475569; margin-top: -1px; font-size:0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.9em; background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:15px;">
-                            <div><strong>Company:</strong> ${escapeHTML(job.company_name || "N/A")}</div>
-                            <div><strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
-                            <div><strong>Required Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
-                            <div><strong>Required Experience:</strong> ${job.years_experience || 0}+ Years</div>
-                            <div><strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div style="grid-column: span 2;"> <strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div style="grid-column: span 2;"> <strong>Required Years of Experience:</strong> ${job.years_experience || 0}+ Years</div>
+                            <div style="grid-column: span 2;"><strong>Required Skills:</strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(job.required_skills || "Any")}</span></div>
+                            <div style="grid-column: span 2;"><strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
                         </div>
                         <button onclick="applyJob(${job.id})" style="width:100%; margin:0;">Apply Now</button>
                     </div>
@@ -458,11 +458,11 @@
                         <p style="color:#64748b; font-weight:500;">${escapeHTML(job.company_name || "N/A")}</p>
                         <p style="color:#475569; font-size:0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.9em; margin-top:15px; margin-bottom:15px;">
-                            <div> <strong>Required Education: </strong> ${escapeHTML(job.required_education || "Any")}</div>
-                            <div><strong>Required Years of Experience: </strong> ${job.years_experience || 0}+ Yrs</div>
-                            <div><strong>Workmode: </strong> ${escapeHTML(job.work_mode || "Flexible")}</div>
-                            <div><strong>Location: </strong> ${escapeHTML(job.job_location || "Any")}</div>
-                            <div style="grid-column: span 2;"><strong>Required Skills:  </strong> ${escapeHTML(job.required_skills || "Any")}</div>
+                            <div style="grid-column: span 2;"> <strong>Required Education: </strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div style="grid-column: span 2;"><strong>Required Years of Experience: </strong> ${job.years_experience || 0}+ Yrs</div>
+                            <div style="grid-column: span 2;"><strong>Workmode: </strong> ${escapeHTML(job.work_mode || "Flexible")}</div>
+                            <div style="grid-column: span 2;"><strong>Location: </strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div style="grid-column: span 2;"><strong>Required Skills:  </strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(job.required_skills || "Any")}</span></div>
                         </div>
                         <button onclick="applyJob(${job.id})" style="width:100%; margin:0;">Apply Now</button>
                     </div>
@@ -522,14 +522,15 @@
                             </div>
                         </div>
                         <p style="color:#64748b; margin-top:-5px; font-weight:500;">Company: ${escapeHTML(app.company_name || "N/A")}</p>
+                        <p style="color:#475569; margin-top:-5px; font-size:0.95em;">${escapeHTML(app.job_description || "")}</p>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.9em; margin:15px 0;">
-                            <div><strong>Required Education: </strong>${escapeHTML(app.required_education || "Any")}</div>
-                            <div><strong>Required years of experience: </strong>${app.years_experience || 0}+ Years</div>
-                            <div><strong>Workmode: </strong>${escapeHTML(app.work_mode || "Hybrid")}</div>
-                            <div><strong>Location: </strong>${escapeHTML(app.job_location || "Any")}</div>
-                            <div style="grid-column:span 2;"> <strong>Required Skills: </strong> ${escapeHTML(app.required_skills || "Any")}</div>
+                            <div  style="grid-column: span 2;"><strong>Required Education: </strong>${escapeHTML(app.required_education || "Any")}</div>
+                            <div  style="grid-column: span 2;"><strong>Required years of experience: </strong>${app.years_experience || 0}+ Years</div>
+                            <div  style="grid-column: span 2;"><strong>Workmode: </strong>${escapeHTML(app.work_mode || "Hybrid")}</div>
+                            <div  style="grid-column: span 2;"><strong>Location: </strong>${escapeHTML(app.job_location || "Any")}</div>
+                            <div style="grid-column:span 2;"> <strong>Required Skills: </strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(app.required_skills || "Any")}</span></div>
                         </div>
-                        <p style="color:#475569; font-size:0.95em;">${escapeHTML(app.job_description || "")}</p>
+                        
                     </div>
                 `).join("");
             } catch (err) {list.innerHTML = `<div class="empty-state">Error loading applications.</div>`;}

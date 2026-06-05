@@ -496,10 +496,10 @@
                         </div>
                         <p style="color: #475569; font-size: 0.95em;">${escapeHTML(job.job_description)}</p>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; background: #f8fafc; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-                            <div><strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
-                            <div><strong>Required Skills:</strong> ${escapeHTML(job.required_skills || "Any")}</div>
-                            <div><strong>Required Years of Experience:</strong> ${job.years_experience || 0}+ Years</div>
-                            <div>  <strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
+                            <div style="grid-column: span 2;"><strong>Required Education:</strong> ${escapeHTML(job.required_education || "Any")}</div>
+                            <div style="grid-column: span 2;"><strong>Required Skills:</strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(job.required_skills || "Any")}</span></div>
+                            <div style="grid-column: span 2;"><strong>Required Years of Experience:</strong> ${job.years_experience || 0}+ Years</div>
+                            <div style="grid-column: span 2;">  <strong>Location:</strong> ${escapeHTML(job.job_location || "Any")}</div>
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button onclick="openEditModal(${job.id})" style="flex:1; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; margin:0;">Edit Post</button>
@@ -617,9 +617,10 @@
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em; margin: 15px 0;">
                             <div><strong> Contact: </strong>${escapeHTML(app.email)}</div>
-                            <div><strong>Education: </strong>${escapeHTML(app.education)} (${escapeHTML(app.major)})</div>
-                            <div><strong>Years of Experience: </strong>${app.years_experience || 0} Years Exp</div>  
-                            <div><strong>Skills: </strong> ${escapeHTML(app.skills)}</div>
+                            <div style="grid-column: span 2;"><strong>Education: </strong>${escapeHTML(app.education)} (${escapeHTML(app.major)})</div>
+                            <div style="grid-column: span 2;"><strong>Skills: </strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(app.skills)}</span></div>
+                            <div style="grid-column: span 2;"><strong>Years of Experience: </strong>${app.years_experience || 0} Years Exp</div>  
+                            <div style="grid-column: span 2;"> <strong>Work Experience: </strong> ${app.work_experience} years</div>
                         </div>
 
                         ${app.status !== 'accepted' && app.status !== 'rejected' ? `
@@ -700,7 +701,8 @@
                          
                         <div style="background: #f8fafc; padding: 12px; border-radius: 6px; font-size: 0.9em; color: #334155;">
                             <div style="margin-bottom: 8px;"><strong>Education: </strong> ${escapeHTML(c.education)} in ${escapeHTML(c.major)}</div>
-                            <div style="margin-bottom: 8px;"> <strong>Experience: </strong> ${c.years_experience || 0} years</div>
+                            <div style="margin-bottom: 8px;"> <strong>Years of Experience: </strong> ${c.years_experience || 0} years</div>
+                            <div style="margin-bottom: 8px;"> <strong>Work Experience: </strong> ${c.work_experience}</div>
                             <div ><strong>Skills: </strong> <span style="color:#2563eb; font-weight:500;">${escapeHTML(c.skills)}</span></div>
                         </div>
                     </div>
@@ -739,8 +741,9 @@
                         <h3 style="margin-top:0;">${escapeHTML(c.full_name)}</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em; margin-top: 15px;">
                             <div><strong>Education: </strong>${escapeHTML(c.education)}</div>
-                            <div><strong> Years of Experience: </strong>${c.years_experience || 0} Yrs</div>
-                            <div style="grid-column: span 2;"><strong>Skills: </strong>${escapeHTML(c.skills)}</div>
+                            <div style="grid-column: span 2;"><strong> Years of Experience: </strong>${c.years_experience || 0} Yrs</div>
+                            <div style="grid-column: span 2;"><strong>Skills: </strong><span style="color:#2563eb; font-weight:500;">${escapeHTML(c.skills)}</span></div>
+                            <div style="grid-column: span 2;"> <strong>Work Experience: </strong> ${c.work_experience} years</div>
                         </div>
                     </div>
                 `).join("");
